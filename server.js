@@ -143,6 +143,7 @@ function policyPage(title, content) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>${title} — AquaLink</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23010b14'/%3E%3Cpath d='M16 4 C16 4 27 16 27 21 C27 27 22 31 16 31 C10 31 5 27 5 21 C5 16 16 4 16 4 Z' fill='%231578c8'/%3E%3Cpath d='M16 4 C16 4 27 16 27 21 C27 27 22 31 16 31 C10 31 5 27 5 21 C5 16 16 4 16 4 Z' fill='%2300e5ff' opacity='0.45'/%3E%3Cellipse cx='12' cy='18' rx='4' ry='6' fill='white' opacity='0.3' transform='rotate(-20,12,18)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -230,6 +231,7 @@ var APP = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>AquaLink - Global Water Distribution</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23010b14'/%3E%3Cpath d='M16 4 C16 4 27 16 27 21 C27 27 22 31 16 31 C10 31 5 27 5 21 C5 16 16 4 16 4 Z' fill='%231578c8'/%3E%3Cpath d='M16 4 C16 4 27 16 27 21 C27 27 22 31 16 31 C10 31 5 27 5 21 C5 16 16 4 16 4 Z' fill='%2300e5ff' opacity='0.45'/%3E%3Cellipse cx='12' cy='18' rx='4' ry='6' fill='white' opacity='0.3' transform='rotate(-20,12,18)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -1070,7 +1072,6 @@ http.createServer(async function(req, res) {
   console.log('   /privacy   /terms   /refund   /shipping');
   console.log('========================================\n');
 });
-
 
 
 
