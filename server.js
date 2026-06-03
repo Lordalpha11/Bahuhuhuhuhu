@@ -224,6 +224,15 @@ var SHIPPING_CONTENT = `
   <div class="section"><h2><span>📧</span> Delivery Issues</h2><p>If your delivery has not arrived within the estimated timeframe, contact us immediately at <span class="highlight">aqualink79@gmail.com</span> with your Booking ID. We will investigate and resolve the issue within 24 hours, including issuing a refund where applicable under our Refund Policy.</p></div>
 `;
 
+var PRICING_CONTENT = `
+  <div class="section"><h2><span>💧</span> How Pricing Works</h2><p>AquaLink connects you with verified water suppliers. Prices are set by individual suppliers based on your location, volume, and water type. A <span class="highlight">15% service fee</span> is automatically added at checkout. You will always see your full total before confirming payment — no hidden charges.</p></div>
+  <div class="section"><h2><span>📍</span> What Affects Your Price?</h2><p>The final price of your order depends on several factors:</p><p>• <span class="highlight">Water Type</span> — Potable, Agricultural, or Industrial water are priced differently by suppliers.<br>• <span class="highlight">Volume</span> — The amount of water you need directly affects the total cost.<br>• <span class="highlight">Location</span> — Distance from the supplier to your delivery address affects logistics costs.<br>• <span class="highlight">Priority Level</span> — Emergency and Urgent orders may attract higher rates than Standard orders.</p></div>
+  <div class="section"><h2><span>💳</span> Service Fee</h2><p>AquaLink charges a flat <span class="highlight">15% service fee</span> on every transaction. This fee covers platform maintenance, payment processing, order coordination, and customer support. The service fee is always included in the final total shown at checkout — you will never be charged anything extra after confirming your order.</p></div>
+  <div class="section"><h2><span>🔒</span> No Hidden Charges</h2><p>What you see at checkout is what you pay. Delivery costs are included in the supplier's price. There are no surprise fees, no extra delivery charges, and no charges after payment is made.</p></div>
+  <div class="section"><h2><span>💰</span> Payment Methods</h2><p>AquaLink accepts all major payment methods through Paystack — including debit cards, bank transfers, and USSD. All transactions are secured and encrypted.</p></div>
+  <div class="section"><h2><span>❓</span> Questions About Pricing?</h2><p>If you have any questions about pricing or need a custom quote for a large order, contact us at <span class="highlight">aqualink79@gmail.com</span> or visit our platform to place a booking and see live supplier prices.</p></div>
+`;
+
 // ── HTML APP ──────────────────────────────────────────
 var APP = `<!DOCTYPE html>
 <html lang="en">
@@ -429,14 +438,54 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(1,11,20,0.3);border-top-color:var(--ink);border-radius:50%;animation:rot .6s linear infinite;vertical-align:middle;margin-right:5px}
 @keyframes rot{to{transform:rotate(360deg)}}
 @media(max-width:768px){
-  .land-nav{padding:12px 20px}.land-links{display:none}
-  .stats-strip{grid-template-columns:1fr 1fr;gap:20px;padding:32px 20px}
+  .land-nav{padding:12px 16px}.land-links{display:none}
+  .hero{padding:100px 20px 60px}
+  .hero h1{font-size:clamp(3rem,15vw,6rem)}
+  .hero p{font-size:.9rem}
+  .btn-hp,.btn-hg{padding:12px 24px;font-size:.9rem}
+  .stats-strip{grid-template-columns:1fr 1fr;gap:16px;padding:28px 16px}
+  .sn{font-size:2rem}.sl{font-size:.62rem}
   .grid3{grid-template-columns:1fr}
   .about-inner,.contact-grid{grid-template-columns:1fr}
-  .about-sec,.sup-cta-sec,.contact-sec,.section{padding:60px 24px}
-  .footer{padding:40px 24px 24px}.footer-grid{grid-template-columns:1fr 1fr}
-  .dcards{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}
-  .m2col,.type-sel{grid-template-columns:1fr}.page{padding:16px}
+  .about-sec,.sup-cta-sec,.contact-sec,.section{padding:48px 16px}
+  .sec-title{font-size:clamp(2rem,8vw,3rem)}
+  .sup-cta-box{flex-direction:column;padding:28px 20px}
+  .sup-cta-box h3{font-size:1.4rem}
+  .sup-perks{gap:12px}
+  .footer{padding:36px 16px 20px}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:24px}
+  .footer-bottom{flex-direction:column;text-align:center;gap:6px}
+  .dcards{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
+  .m2col,.type-sel{grid-template-columns:1fr}
+  .page{padding:12px}
+  .ptitle{font-size:1.6rem}
+  .topbar{padding:10px 14px;gap:6px}
+  .tlogo{font-size:1.2rem}
+  .tnav{gap:4px}
+  .nb{padding:5px 10px;font-size:.72rem}
+  .tuname{display:none}
+  .turole{display:none}
+  .panel{padding:14px}
+  .mbox{padding:24px 18px}
+  .mh2{font-size:1.4rem}
+  table{font-size:.78rem}
+  th{font-size:.6rem;padding:7px 8px}
+  td{padding:8px}
+  .dcard{padding:14px}
+  .dcard-val{font-size:1.6rem}
+  .about-stats{grid-template-columns:1fr 1fr}
+  .hero-btns{flex-direction:column;align-items:center}
+  .land-btns .btn-outline{display:none}
+}
+@media(max-width:480px){
+  .stats-strip{grid-template-columns:1fr 1fr}
+  .dcards{grid-template-columns:1fr 1fr}
+  .footer-grid{grid-template-columns:1fr}
+  .hero h1{font-size:clamp(2.5rem,13vw,4rem)}
+  .about-stats{grid-template-columns:1fr 1fr}
+  .land-nav{padding:10px 14px}
+  .btn-solid{padding:8px 14px;font-size:.78rem}
 }
 </style>
 </head>
@@ -447,6 +496,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     <div class="land-links">
       <a href="#how">How It Works</a><a href="#who">Who It's For</a>
       <a href="#suppliers">Become a Supplier</a><a href="#about">About Us</a><a href="#contact">Contact</a>
+      <a href="/pricing" target="_blank">Pricing</a>
     </div>
     <div class="land-btns">
       <button class="btn-outline" onclick="openAuth('login')">Login</button>
@@ -557,6 +607,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <a href="/terms" target="_blank">Terms of Service</a>
         <a href="/refund" target="_blank">Refund Policy</a>
         <a href="/shipping" target="_blank">Shipping Policy</a>
+        <a href="/pricing" target="_blank">Pricing & Fees</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -886,6 +937,9 @@ http.createServer(async function(req, res) {
   if (rawUrl==='/shipping' && method==='GET') {
     return html(res, policyPage('Shipping & Delivery Policy', SHIPPING_CONTENT));
   }
+  if (rawUrl==='/pricing' && method==='GET') {
+    return html(res, policyPage('Pricing & Fees', PRICING_CONTENT));
+  }
 
   // All other non-API routes serve the main app
   if (!rawUrl.startsWith('/api')) { html(res, APP); return; }
@@ -1072,6 +1126,5 @@ http.createServer(async function(req, res) {
   console.log('   /privacy   /terms   /refund   /shipping');
   console.log('========================================\n');
 });
-
 
 
