@@ -1133,7 +1133,24 @@ function addTierRow(minVol,discount){
   var row=document.createElement('div');
   row.id='tier-'+id;
   row.style.cssText='display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-bottom:10px;align-items:end';
-  row.innerHTML='<div class="fg" style="margin:0"><label style="font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600">Min Volume (Litres)</label><input type="number" id="tier-vol-'+id+'" value="'+(minVol||'')+'" placeholder="e.g. 10000" style="padding:11px 14px;background:rgba(1,11,20,0.8);border:1.5px solid rgba(0,229,255,0.15);border-radius:12px;color:#fff;font-family:Outfit,sans-serif;font-size:.86rem;outline:none"></div><div class="fg" style="margin:0"><label style="font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600">Discount (%)</label><input type="number" id="tier-disc-'+id+'" value="'+(discount||'')+'" placeholder="e.g. 10" min="0" max="50" style="padding:11px 14px;background:rgba(1,11,20,0.8);border:1.5px solid rgba(0,229,255,0.15);border-radius:12px;color:#fff;font-family:Outfit,sans-serif;font-size:.86rem;outline:none"></div><button onclick="document.getElementById(\'tier-'+id+'\').remove()" style="padding:11px;background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.25);border-radius:12px;color:var(--coral);cursor:pointer">✕</button>';
+  var inpStyle='padding:11px 14px;background:rgba(1,11,20,0.8);border:1.5px solid rgba(0,229,255,0.15);border-radius:12px;color:#fff;font-family:Outfit,sans-serif;font-size:.86rem;outline:none';
+  var lblStyle='font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600';
+  var volInp=document.createElement('input');
+  volInp.type='number';volInp.id='tier-vol-'+id;volInp.placeholder='e.g. 10000';volInp.style.cssText=inpStyle;
+  if(minVol)volInp.value=minVol;
+  var discInp=document.createElement('input');
+  discInp.type='number';discInp.id='tier-disc-'+id;discInp.placeholder='e.g. 10';discInp.min='0';discInp.max='50';discInp.style.cssText=inpStyle;
+  if(discount)discInp.value=discount;
+  var removeBtn=document.createElement('button');
+  removeBtn.textContent='✕';removeBtn.style.cssText='padding:11px;background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.25);border-radius:12px;color:var(--coral);cursor:pointer';
+  removeBtn.onclick=function(){document.getElementById('tier-'+id).remove();};
+  var col1=document.createElement('div');col1.className='fg';col1.style.margin='0';
+  var lbl1=document.createElement('label');lbl1.style.cssText=lblStyle;lbl1.textContent='Min Volume (Litres)';
+  col1.appendChild(lbl1);col1.appendChild(volInp);
+  var col2=document.createElement('div');col2.className='fg';col2.style.margin='0';
+  var lbl2=document.createElement('label');lbl2.style.cssText=lblStyle;lbl2.textContent='Discount (%)';
+  col2.appendChild(lbl2);col2.appendChild(discInp);
+  row.appendChild(col1);row.appendChild(col2);row.appendChild(removeBtn);
   document.getElementById('tier-rows').appendChild(row);
 }
 
