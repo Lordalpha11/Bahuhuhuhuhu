@@ -1266,12 +1266,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     </table></div><div id="bk-empty" class="empty" style="display:none"><div style="font-size:2rem;margin-bottom:10px">💧</div><span id="bk-msg">No bookings yet.</span></div></div>
   </div>
   <div class="page" id="pg-suppliers">
-    <div class="ptitle">Water Suppliers</div><p class="psub">Verified water suppliers registered on AquaLink.</p>
-    <div class="info-banner">ℹ️ When you book water, our team matches you with the nearest verified supplier and coordinates delivery to your location.</div>
-    <div class="panel" style="padding:0;overflow:hidden"><div class="tscroll"><table>
-      <thead><tr><th>Supplier</th><th>Country</th><th>Water Types</th><th>Coverage Area</th><th>Status</th></tr></thead>
-      <tbody id="pub-sup-rows"></tbody>
-    </table></div><div id="pub-sup-empty" class="empty" style="display:none"><div style="font-size:2rem;margin-bottom:10px">🚚</div><p>No verified suppliers yet.</p></div></div>
+    <div class="ptitle">Water Suppliers</div><p class="psub">Browse verified suppliers and their prices. Select a supplier when booking.</p>
+    <div class="info-banner">ℹ️ Prices shown are per litre. A 15% AquaLink service fee is added at checkout. All prices are set by individual suppliers.</div>
+    <div id="pub-sup-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;margin-top:4px"></div>
+    <div id="pub-sup-empty" class="empty" style="display:none"><div style="font-size:2rem;margin-bottom:10px">🚚</div><p>No verified suppliers yet. Check back soon!</p></div>
   </div>
   <div class="page" id="pg-supplier">
     <div class="ptitle">Supplier Dashboard</div><p class="psub">Manage your pricing, orders and earnings.</p>
@@ -1395,7 +1393,63 @@ async function loadConsDash(){var r=await api('GET','/bookings');var bk=r.bookin
 async function loadBookings(){var search=document.getElementById('f-search')?document.getElementById('f-search').value:'';var status=document.getElementById('f-status')?document.getElementById('f-status').value:'all';var r=await api('GET','/bookings?status='+status+(search?'&search='+encodeURIComponent(search):''));var tbody=document.getElementById('bk-rows'),empty=document.getElementById('bk-empty');if(!r.bookings||r.bookings.length===0){tbody.innerHTML='';empty.style.display='block';document.getElementById('bk-msg').textContent='No bookings yet. Go to Book Water to place your first order.';return;}empty.style.display='none';var rows='';for(var i=0;i<r.bookings.length;i++){var b=r.bookings[i];var payCell=b.paid?'<span style="color:var(--green);font-weight:600;font-size:.78rem">Paid</span>':'<button class="btn btn-p" style="padding:4px 10px;font-size:.74rem" data-bid="'+b.id+'" data-vol="'+b.volumeLitres+'" onclick="payBook(this.dataset.bid,parseInt(this.dataset.vol))">Pay</button>';rows+='<tr><td class=bid>'+b.id+'</td><td>'+b.destination+'</td><td style="color:var(--muted)">'+b.waterType+'</td><td style="font-weight:600">'+fv(b.volumeLitres)+'</td><td><span class="badge '+pc(b.priority)+'">'+b.priority+'</span></td><td><span class="badge '+sc(b.status)+'">'+b.status+'</span></td><td>'+payCell+'</td><td style="color:var(--muted);font-size:.78rem">'+b.createdAt.slice(0,10)+'</td><td><button class=btn-d data-bid="'+b.id+'" onclick="cancelB(this.dataset.bid)">Cancel</button></td></tr>';}tbody.innerHTML=rows;}
 async function updStat(id,status){var r=await api('PUT','/bookings/'+id+'/status',{status:status});if(r.error)toast('❌',r.error);else toast('✅','Updated to '+status);}
 async function cancelB(id){if(!confirm('Cancel booking '+id+'?'))return;var r=await api('DELETE','/bookings/'+id);if(r.error){toast('❌',r.error);return;}toast('🗑️','Cancelled.');loadBookings();}
-async function loadPubSuppliers(){var r=await api('GET','/suppliers');var verified=(r.suppliers||[]).filter(function(s){return s.status==='verified';});var tbody=document.getElementById('pub-sup-rows'),empty=document.getElementById('pub-sup-empty');if(verified.length===0){tbody.innerHTML='';empty.style.display='block';return;}empty.style.display='none';tbody.innerHTML=verified.map(function(s){return'<tr><td style="font-weight:600">'+s.name+'</td><td>'+s.country+'</td><td style="color:var(--muted)">'+s.waterTypes+'</td><td style="font-size:.8rem;color:var(--muted)">'+s.regions+'</td><td><span class="badge b-active">✅ Verified</span></td></tr>';}).join('');}
+async function loadPubSuppliers(){
+  var r=await api('GET','/suppliers');
+  var verified=(r.suppliers||[]).filter(function(s){return s.status==='verified';});
+  var container=document.getElementById('pub-sup-cards');
+  var empty=document.getElementById('pub-sup-empty');
+  container.innerHTML='';
+  if(verified.length===0){empty.style.display='block';return;}
+  empty.style.display='none';
+  verified.forEach(function(s){
+    var card=document.createElement('div');
+    card.style.cssText='background:rgba(6,32,64,0.6);border:1px solid rgba(0,229,255,0.12);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px';
+    var nameDiv=document.createElement('div');
+    var nameEl=document.createElement('div');
+    nameEl.style.cssText='font-family:Bebas Neue,sans-serif;font-size:1.15rem;letter-spacing:1.5px;color:#fff;margin-bottom:3px';
+    nameEl.textContent=s.name;
+    var orgEl=document.createElement('div');
+    orgEl.style.cssText='font-size:.75rem;color:#4a7a9b';
+    orgEl.textContent=s.organization||s.country;
+    nameDiv.appendChild(nameEl);nameDiv.appendChild(orgEl);
+    var badge=document.createElement('span');
+    badge.className='badge b-active';badge.textContent='Verified';
+    var header=document.createElement('div');
+    header.style.cssText='display:flex;justify-content:space-between;align-items:flex-start';
+    header.appendChild(nameDiv);header.appendChild(badge);
+    card.appendChild(header);
+    var coverage=document.createElement('div');
+    coverage.style.cssText='font-size:.78rem;color:#4a7a9b';
+    coverage.textContent='Coverage: '+(s.regions||s.country||'N/A');
+    card.appendChild(coverage);
+    var pricing=document.createElement('div');
+    pricing.style.cssText='background:rgba(1,11,20,0.5);border:1px solid rgba(0,229,255,0.08);border-radius:10px;padding:12px';
+    if(s.pricing&&(s.pricing.potable||s.pricing.agricultural||s.pricing.industrial)){
+      var pTitle=document.createElement('div');
+      pTitle.style.cssText='font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:#4a7a9b;font-weight:600;margin-bottom:8px';
+      pTitle.textContent='Price Per Litre';
+      pricing.appendChild(pTitle);
+      [{label:'Potable',val:s.pricing.potable,color:'#00e5ff'},{label:'Agricultural',val:s.pricing.agricultural,color:'#06d6a0'},{label:'Industrial',val:s.pricing.industrial,color:'#ffd166'}].forEach(function(p){
+        if(!p.val)return;
+        var row=document.createElement('div');
+        row.style.cssText='display:flex;justify-content:space-between;align-items:center;margin-bottom:5px';
+        var lbl=document.createElement('span');lbl.style.cssText='font-size:.8rem;color:#c8f0ff';lbl.textContent=p.label;
+        var val=document.createElement('span');val.style.cssText='font-family:Bebas Neue,sans-serif;font-size:1rem;letter-spacing:1px;color:'+p.color;val.textContent='NGN '+Number(p.val).toLocaleString()+'/L';
+        row.appendChild(lbl);row.appendChild(val);pricing.appendChild(row);
+      });
+      if(s.pricing.tiers&&s.pricing.tiers.length>0){
+        var tierTitle=document.createElement('div');tierTitle.style.cssText='font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:#4a7a9b;font-weight:600;margin-top:8px;margin-bottom:5px';tierTitle.textContent='Bulk Discounts';pricing.appendChild(tierTitle);
+        s.pricing.tiers.forEach(function(t){var trow=document.createElement('div');trow.style.cssText='font-size:.76rem;color:#4a7a9b;margin-bottom:3px';trow.textContent=Number(t.minVol).toLocaleString()+'L+ orders: '+t.discount+'% off';pricing.appendChild(trow);});
+      }
+    } else {
+      var noPrice=document.createElement('div');noPrice.style.cssText='font-size:.8rem;color:#4a7a9b;text-align:center;padding:6px 0';noPrice.textContent='Contact supplier for pricing';pricing.appendChild(noPrice);
+    }
+    card.appendChild(pricing);
+    var types=document.createElement('div');types.style.cssText='font-size:.76rem;color:#4a7a9b';types.textContent='Supplies: '+s.waterTypes;card.appendChild(types);
+    var btn=document.createElement('button');btn.className='btn btn-p';btn.style.cssText='width:100%;padding:11px;margin-top:4px';btn.textContent='Book Water Now';btn.onclick=function(){goPage('book');};card.appendChild(btn);
+    container.appendChild(card);
+  });
+}
 async function loadSupDash(){
   var sr=await api('GET','/suppliers');
   var me=(sr.suppliers||[]).find(function(s){return s.id===ME.id;});
@@ -2002,4 +2056,5 @@ http.createServer(async function(req, res) {
   console.log('   /privacy   /terms   /refund   /shipping');
   console.log('========================================\n');
 });
+
 
