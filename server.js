@@ -331,6 +331,339 @@ var PRICING_CONTENT = `
 `;
 
 // ── HTML APP ──────────────────────────────────────────
+/**
+ * AQUALINK - COMPLETE PLATFORM
+ * Run: node server.js
+ * Open: http://localhost:3000
+ * Admin: admin@aqualink.org / admin123
+ */
+
+var http   = require('http');
+var fs     = require('fs');
+var path   = require('path');
+var crypto = require('crypto');
+
+var PORT           = process.env.PORT || 3000;
+var SECRET         = 'aqualink2026';
+var DBFILE         = path.join(__dirname, 'database.json');
+var RESEND_KEY     = process.env.RESEND_KEY     || 're_EiMBpMft_AuK6VCRGB7RaUUWfxR3JD2KJ';
+var ADMIN_EMAIL    = process.env.ADMIN_EMAIL    || 'aqualink79@gmail.com';
+var FROM_EMAIL     = 'noreply@aqualinkglobal.com';
+var PAYSTACK_PUB   = process.env.PAYSTACK_PUBLIC || 'pk_test_f01988149ae68d04ac03ed5f5ed887af26ce3787';
+var PAYSTACK_SEC   = process.env.PAYSTACK_SECRET || 'sk_test_5d4f5870cc2f185648fc85d2563ee0086094f8a7';
+
+// ── DATABASE ──────────────────────────────────────────
+function loadDB() {
+  if (!fs.existsSync(DBFILE)) return { users:[], bookings:[], suppliers:[], assignments:[] };
+  try { var db=JSON.parse(fs.readFileSync(DBFILE,'utf8')); if(!db.assignments)db.assignments=[]; return db; }
+  catch(e) { return { users:[], bookings:[], suppliers:[], assignments:[] }; }
+}
+function saveDB(db) { fs.writeFileSync(DBFILE, JSON.stringify(db,null,2)); }
+function uid()  { return crypto.randomBytes(6).toString('hex'); }
+function hashPw(pw) { return crypto.createHmac('sha256',SECRET).update(pw).digest('hex'); }
+function makeToken(u) {
+  var p = Buffer.from(JSON.stringify({id:u.id,role:u.role,exp:Date.now()+7*86400000})).toString('base64');
+  var s = crypto.createHmac('sha256',SECRET).update(p).digest('base64');
+  return p+'.'+s;
+}
+function checkToken(tok) {
+  if (!tok) return null;
+  var parts = (tok||'').split('.');
+  if (parts.length!==2) return null;
+  if (crypto.createHmac('sha256',SECRET).update(parts[0]).digest('base64')!==parts[1]) return null;
+  try { var d=JSON.parse(Buffer.from(parts[0],'base64').toString()); return d.exp>Date.now()?d:null; }
+  catch(e) { return null; }
+}
+function getToken(req) { return (req.headers['authorization']||'').replace('Bearer ',''); }
+function getBody(req) {
+  return new Promise(function(resolve){
+    var b=''; req.on('data',function(c){b+=c;}); req.on('end',function(){try{resolve(JSON.parse(b||'{}'));}catch(e){resolve({});}});
+  });
+}
+function nextId() {
+  var db=loadDB(), max=0;
+  db.bookings.forEach(function(b){var n=parseInt((b.id||'AQL-0').replace('AQL-',''))||0;if(n>max)max=n;});
+  return 'AQL-'+String(max+1).padStart(5,'0');
+}
+function safeUser(u) { return {id:u.id,name:u.name,email:u.email,role:u.role,organization:u.organization,country:u.country,userType:u.userType,createdAt:u.createdAt}; }
+
+// ── SEED ──────────────────────────────────────────────
+function seed() {
+  var db=loadDB();
+  if (db.users.length>0) return;
+  var aid=uid(), nid=uid();
+  db.users=[
+    {id:aid,name:'Admin User',email:'admin@aqualink.org',passwordHash:hashPw('admin123'),role:'admin',organization:'AquaLink HQ',country:'Global',userType:'admin',createdAt:new Date().toISOString()},
+    {id:nid,name:'WaterAid Nigeria',email:'ngo@wateraid.org',passwordHash:hashPw('test123'),role:'ngo',organization:'WaterAid',country:'Nigeria',userType:'consumer',createdAt:new Date().toISOString()}
+  ];
+  db.bookings=[
+    {id:'AQL-00001',userId:nid,destination:'Lagos, Nigeria',waterType:'Potable',volumeLitres:50000,priority:'Emergency',status:'active',requestorType:'NGO',requiredBy:'2026-05-02',notes:'Flood relief',paid:false,createdAt:new Date().toISOString(),estimatedDelivery:'2026-05-04'},
+    {id:'AQL-00002',userId:nid,destination:'Nairobi, Kenya',waterType:'Potable',volumeLitres:120000,priority:'Urgent',status:'transit',requestorType:'Government',requiredBy:'2026-05-05',notes:'',paid:false,createdAt:new Date().toISOString(),estimatedDelivery:'2026-05-07'},
+  ];
+  db.suppliers=[];
+  saveDB(db);
+  console.log('Demo data created!');
+}
+
+// ── EMAIL ─────────────────────────────────────────────
+function sendEmail(to, subject, body) {
+  return new Promise(function(resolve){
+    try {
+      var https=require('https');
+      var payload=JSON.stringify({from:'AquaLink <'+FROM_EMAIL+'>',to:[to],subject:subject,html:body});
+      var opts={hostname:'api.resend.com',port:443,path:'/emails',method:'POST',headers:{'Authorization':'Bearer '+RESEND_KEY,'Content-Type':'application/json','Content-Length':Buffer.byteLength(payload)}};
+      var req=https.request(opts,function(res){
+        var d=''; res.on('data',function(c){d+=c;}); res.on('end',function(){
+          if(res.statusCode===200||res.statusCode===201){console.log('Email sent to:',to);}
+          else{console.log('Email failed:',res.statusCode,d.slice(0,100));}
+          resolve();
+        });
+      });
+      req.on('error',function(e){console.log('Email error:',e.message);resolve();});
+      req.write(payload); req.end();
+    } catch(e){console.log('Email exception:',e.message);resolve();}
+  });
+}
+function emailWrap(body) {
+  return '<!DOCTYPE html><html><head><meta charset=UTF-8><style>body{margin:0;padding:20px;background:#f0f4f8;font-family:Arial,sans-serif}.wrap{max-width:580px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1)}.head{background:linear-gradient(135deg,#1578c8,#00e5ff);padding:28px;text-align:center}.head h1{color:#010b14;font-size:1.5rem;letter-spacing:3px;margin:0}.body{padding:28px}.body h2{color:#1578c8;font-size:1.1rem;margin-bottom:12px}.body p{color:#333;font-size:.9rem;line-height:1.6;margin-bottom:12px}table{width:100%;border-collapse:collapse;margin:16px 0}td{padding:10px 12px;border-bottom:1px solid #f0f4f8;font-size:.88rem}td:first-child{color:#4a7a9b;font-weight:600;width:38%}td:last-child{color:#021525;font-weight:500}.cta{display:inline-block;margin-top:16px;padding:13px 30px;background:linear-gradient(135deg,#1578c8,#00e5ff);color:#010b14;text-decoration:none;border-radius:100px;font-weight:700;font-size:.88rem}.foot{background:#f8fafb;padding:16px;text-align:center;font-size:.75rem;color:#4a7a9b;border-top:1px solid #eee}</style></head><body><div class=wrap><div class=head><h1>AQUALINK</h1><p style="color:#010b14;font-size:.85rem;margin:4px 0 0;opacity:.8">Global Water Distribution Platform</p></div><div class=body>'+body+'</div><div class=foot>AquaLink Global &bull; aqualink79@gmail.com &bull; Automated message</div></div></body></html>';
+}
+function fmtVol(l){return l>=1e6?(l/1e6).toFixed(1)+'M L':l>=1000?(l/1000).toFixed(0)+'K L':l+' L';}
+
+function emailNewBooking(booking,userName,userEmail){
+  var priColor=booking.priority==='Emergency'?'#ff6b6b':booking.priority==='Urgent'?'#ffd166':'#4a7a9b';
+  var adminHtml=emailWrap('<h2>New Water Booking!</h2><p>A new booking was submitted on AquaLink.</p><table><tr><td>Booking ID</td><td style="color:#00e5ff;font-weight:700">'+booking.id+'</td></tr><tr><td>From</td><td>'+userName+' ('+userEmail+')</td></tr><tr><td>Destination</td><td>'+booking.destination+'</td></tr><tr><td>Water Type</td><td>'+booking.waterType+'</td></tr><tr><td>Volume</td><td>'+fmtVol(booking.volumeLitres)+'</td></tr><tr><td>Priority</td><td style="color:'+priColor+';font-weight:700">'+booking.priority+'</td></tr><tr><td>Est. Delivery</td><td>'+booking.estimatedDelivery+'</td></tr></table><a class=cta href="https://aqualink-1.onrender.com">Open Dashboard</a>');
+  var custHtml=emailWrap('<h2>Booking Confirmed!</h2><p>Thank you <strong>'+userName+'</strong>! Your water booking has been received.</p><table><tr><td>Booking ID</td><td style="color:#00e5ff;font-weight:700">'+booking.id+'</td></tr><tr><td>Destination</td><td>'+booking.destination+'</td></tr><tr><td>Volume</td><td>'+fmtVol(booking.volumeLitres)+'</td></tr><tr><td>Priority</td><td>'+booking.priority+'</td></tr><tr><td>Est. Delivery</td><td>'+booking.estimatedDelivery+'</td></tr></table><p>Our team will contact you within 24 hours to coordinate delivery.</p><a class=cta href="https://aqualink-1.onrender.com">Track Your Booking</a>');
+  sendEmail(ADMIN_EMAIL,'New Booking '+booking.id+' - '+booking.priority+' - '+booking.destination,adminHtml);
+  sendEmail(userEmail,'Booking Confirmed - '+booking.id,custHtml);
+  if(userEmail!==ADMIN_EMAIL) sendEmail(ADMIN_EMAIL,'Forward to Customer ('+userEmail+'): Booking '+booking.id,custHtml);
+}
+
+function emailWelcome(user){
+  var isSupplier=user.userType==='supplier';
+  var adminHtml=emailWrap('<h2>New '+(isSupplier?'Supplier':'User')+' Registered!</h2><table><tr><td>Name</td><td>'+user.name+'</td></tr><tr><td>Email</td><td>'+user.email+'</td></tr><tr><td>Type</td><td>'+(isSupplier?'Water Supplier':'Consumer')+'</td></tr><tr><td>Organization</td><td>'+(user.organization||'—')+'</td></tr><tr><td>Country</td><td>'+(user.country||'—')+'</td></tr></table><a class=cta href="https://aqualink-1.onrender.com">View Dashboard</a>');
+  sendEmail(ADMIN_EMAIL,'New '+(isSupplier?'Supplier':'User')+': '+user.name+' from '+(user.country||'?'),adminHtml);
+  var userHtml=isSupplier
+    ? emailWrap('<h2>Supplier Application Received!</h2><p>Thank you <strong>'+user.name+'</strong>! Your application has been received.</p><table><tr><td>Step 1</td><td>Team reviews application (24 hours)</td></tr><tr><td>Step 2</td><td>Verification of water supply capacity</td></tr><tr><td>Step 3</td><td>You receive Verified Supplier badge</td></tr><tr><td>Step 4</td><td>Start receiving booking requests</td></tr></table><p>Questions? Email aqualink79@gmail.com</p>')
+    : emailWrap('<h2>Welcome to AquaLink!</h2><p>Your account is ready, <strong>'+user.name+'</strong>! You can now book clean water for your community.</p><table><tr><td>Email</td><td>'+user.email+'</td></tr><tr><td>Country</td><td>'+(user.country||'—')+'</td></tr></table><p>You can now book water, track deliveries, and request emergency supplies.</p><a class=cta href="https://aqualink-1.onrender.com">Book Water Now</a>');
+  sendEmail(user.email,isSupplier?'AquaLink Supplier Application Received':'Welcome to AquaLink!',userHtml);
+  if(user.email!==ADMIN_EMAIL) sendEmail(ADMIN_EMAIL,'Forward to '+(isSupplier?'Supplier':'User')+' ('+user.email+'): Welcome Email',userHtml);
+}
+
+function emailPayment(booking,userName,userEmail,amount,currency){
+  var adminHtml=emailWrap('<h2>Payment Received!</h2><table><tr><td>Booking ID</td><td style="color:#00e5ff;font-weight:700">'+booking.id+'</td></tr><tr><td>Customer</td><td>'+userName+'</td></tr><tr><td>Amount</td><td style="color:#06d6a0;font-weight:700">'+currency+' '+amount.toLocaleString()+'</td></tr><tr><td>Destination</td><td>'+booking.destination+'</td></tr></table><a class=cta href="https://aqualink-1.onrender.com">View Dashboard</a>');
+  var custHtml=emailWrap('<h2>Payment Confirmed!</h2><p>Thank you <strong>'+userName+'</strong>! Your payment has been received and your booking is now active.</p><table><tr><td>Booking ID</td><td style="color:#00e5ff;font-weight:700">'+booking.id+'</td></tr><tr><td>Amount Paid</td><td style="color:#06d6a0;font-weight:700">'+currency+' '+amount.toLocaleString()+'</td></tr><tr><td>Status</td><td>Active - being coordinated</td></tr></table><p>Our team will coordinate your delivery. You will be contacted within 24 hours.</p><a class=cta href="https://aqualink-1.onrender.com">Track Booking</a>');
+  sendEmail(ADMIN_EMAIL,'Payment Received - '+booking.id+' - '+currency+' '+amount,adminHtml);
+  sendEmail(userEmail,'Payment Confirmed - AquaLink Booking '+booking.id,custHtml);
+  if(userEmail!==ADMIN_EMAIL) sendEmail(ADMIN_EMAIL,'Forward to Customer ('+userEmail+'): Payment Receipt',custHtml);
+}
+
+function emailSupplierApproved(sup,userEmail){
+  var html=emailWrap('<h2>You are now a Verified AquaLink Supplier!</h2><p>Dear <strong>'+sup.name+'</strong>, your supplier application has been <strong style="color:#06d6a0">approved!</strong></p><table><tr><td>Status</td><td style="color:#06d6a0;font-weight:700">Verified Supplier</td></tr><tr><td>Organization</td><td>'+sup.organization+'</td></tr><tr><td>Coverage</td><td>'+sup.regions+'</td></tr><tr><td>Water Types</td><td>'+sup.waterTypes+'</td></tr></table><p>You will now start receiving booking requests. Log in to your dashboard to see available orders.</p><a class=cta href="https://aqualinkglobal.com">Login to Dashboard</a>');
+  sendEmail(userEmail,'You are a Verified AquaLink Supplier!',html);
+  sendEmail(ADMIN_EMAIL,'Supplier Approved: '+sup.name,html);
+}
+
+function emailSupplierNewOrder(booking, sup, supEmail, expiryHours, totalAmount){
+  var priColor=booking.priority==='Emergency'?'#ff6b6b':booking.priority==='Urgent'?'#ffd166':'#4a7a9b';
+  var html=emailWrap('<h2>New Order Request!</h2><p>Dear <strong>'+sup.name+'</strong>, a customer has selected you for a water delivery order. Please log in to accept or decline within <strong style="color:'+priColor+'">'+expiryHours+' hour(s)</strong>.</p><table><tr><td>Booking ID</td><td style="color:#00e5ff;font-weight:700">'+booking.id+'</td></tr><tr><td>Destination</td><td>'+booking.destination+'</td></tr><tr><td>Water Type</td><td>'+booking.waterType+'</td></tr><tr><td>Volume</td><td>'+fmtVol(booking.volumeLitres)+'</td></tr><tr><td>Priority</td><td style="color:'+priColor+';font-weight:700">'+booking.priority+'</td></tr><tr><td>Your Payout</td><td style="color:#06d6a0;font-weight:700">NGN '+Math.round(totalAmount*0.85).toLocaleString()+'</td></tr><tr><td>Respond By</td><td style="color:'+priColor+';font-weight:700">Within '+expiryHours+' hour(s)</td></tr></table><p style="color:#ff6b6b;font-weight:600">⚠️ If you do not respond within the time limit, the order will be automatically reassigned to another supplier.</p><a class=cta href="https://aqualinkglobal.com">Login to Respond</a>');
+  sendEmail(supEmail,'New Order Request - '+booking.id+' - '+booking.priority,html);
+}
+
+function emailSupplierReassigned(booking, oldSupName, newSupName, reason, customerEmail, customerName){
+  var custHtml=emailWrap('<h2>Order Update</h2><p>Dear <strong>'+customerName+'</strong>, your order <strong style="color:#00e5ff">'+booking.id+'</strong> has been reassigned to a new supplier.</p><table><tr><td>Booking ID</td><td style="color:#00e5ff;font-weight:700">'+booking.id+'</td></tr><tr><td>Previous Supplier</td><td>'+oldSupName+'</td></tr><tr><td>New Supplier</td><td style="color:#06d6a0;font-weight:700">'+newSupName+'</td></tr><tr><td>Reason</td><td>'+reason+'</td></tr></table><p>Your order is still being processed and will be delivered as scheduled. No action is needed from you.</p><a class=cta href="https://aqualinkglobal.com">Track Your Order</a>');
+  sendEmail(customerEmail,'Order Reassigned - '+booking.id, custHtml);
+  sendEmail(ADMIN_EMAIL,'Order Reassigned: '+booking.id+' from '+oldSupName+' to '+newSupName, custHtml);
+}
+
+function emailNoSupplierAvailable(booking, customerEmail, customerName){
+  var custHtml=emailWrap('<h2>Order Refund Notice</h2><p>Dear <strong>'+customerName+'</strong>, we regret to inform you that no available supplier could be found for your order <strong style="color:#00e5ff">'+booking.id+'</strong>.</p><table><tr><td>Booking ID</td><td style="color:#00e5ff;font-weight:700">'+booking.id+'</td></tr><tr><td>Destination</td><td>'+booking.destination+'</td></tr><tr><td>Status</td><td style="color:#ff6b6b;font-weight:700">Refund Initiated</td></tr></table><p>A full refund has been initiated and will reflect within 5-7 business days. We apologize for the inconvenience.</p><p>You are welcome to place a new booking at any time.</p><a class=cta href="https://aqualinkglobal.com">Place New Booking</a>');
+  sendEmail(customerEmail,'Refund Initiated - Order '+booking.id, custHtml);
+  sendEmail(ADMIN_EMAIL,'NO SUPPLIER AVAILABLE - Refund needed for '+booking.id, custHtml);
+}
+
+// ── RESPONSE ──────────────────────────────────────────
+function cors(res){res.setHeader('Access-Control-Allow-Origin','*');res.setHeader('Access-Control-Allow-Headers','Content-Type,Authorization');res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,DELETE,OPTIONS');}
+function json(res,status,data){cors(res);res.writeHead(status,{'Content-Type':'application/json'});res.end(JSON.stringify(data));}
+function html(res,body){cors(res);res.writeHead(200,{'Content-Type':'text/html'});res.end(body);}
+
+// ── SUPPLIER PRICING HELPERS ──────────────────────────
+function getExpiryHours(priority){
+  return priority==='Emergency'?2:priority==='Urgent'?12:24;
+}
+
+function calcSupplierPrice(sup, waterType, volumeLitres){
+  if(!sup.pricing) return null;
+  var wt = waterType.toLowerCase().replace(/\s+/g,'');
+  var basePrice = sup.pricing['potable']||0;
+  if(wt.includes('agri')) basePrice = sup.pricing['agricultural']||sup.pricing['potable']||0;
+  if(wt.includes('indus')) basePrice = sup.pricing['industrial']||sup.pricing['potable']||0;
+  if(wt.includes('emerg')) basePrice = sup.pricing['potable']||0;
+  // Apply volume tiers
+  var tiers = sup.pricing.tiers||[];
+  var discount = 0;
+  for(var i=0;i<tiers.length;i++){
+    if(volumeLitres >= tiers[i].minVol) discount = tiers[i].discount||0;
+  }
+  var pricePerLitre = basePrice * (1 - discount/100);
+  return Math.round(pricePerLitre * volumeLitres);
+}
+
+function getSupplierTotal(baseAmount){
+  return Math.round(baseAmount * 1.15); // add 15% service fee
+}
+
+// Auto-reassign booking to next available supplier
+function tryReassign(bookingId, excludeSupplierIds){
+  var db = loadDB();
+  var booking = db.bookings.find(function(b){return b.id===bookingId;});
+  if(!booking) return;
+  excludeSupplierIds = excludeSupplierIds||[];
+  var available = (db.suppliers||[]).filter(function(s){
+    return s.status==='verified' && excludeSupplierIds.indexOf(s.id)===-1 && s.pricing;
+  });
+  if(available.length===0){
+    // No supplier available — mark for refund
+    booking.status='refund_pending';
+    booking.supplierAssigned=null;
+    saveDB(db);
+    var customer = db.users.find(function(u){return u.id===booking.userId;});
+    if(customer) emailNoSupplierAvailable(booking, customer.email, customer.name);
+    return;
+  }
+  // Pick first available supplier
+  var nextSup = available[0];
+  var expiryHours = getExpiryHours(booking.priority);
+  var assignment = {
+    id: uid(),
+    bookingId: bookingId,
+    supplierId: nextSup.id,
+    supplierName: nextSup.name,
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now()+expiryHours*3600000).toISOString(),
+    reason: null
+  };
+  db.assignments.push(assignment);
+  booking.supplierAssigned = nextSup.id;
+  booking.assignmentId = assignment.id;
+  saveDB(db);
+  var supUser = db.users.find(function(u){return u.id===nextSup.id;});
+  var totalAmount = calcSupplierPrice(nextSup, booking.waterType, booking.volumeLitres)||booking.amountPaid||0;
+  if(supUser) emailSupplierNewOrder(booking, nextSup, supUser.email, expiryHours, totalAmount);
+  // Set timer to auto-expire
+  setTimeout(function(){
+    var db2 = loadDB();
+    var a = db2.assignments.find(function(x){return x.id===assignment.id;});
+    if(a && a.status==='pending'){
+      a.status='expired';
+      var b2 = db2.bookings.find(function(x){return x.id===bookingId;});
+      if(b2) b2.supplierAssigned=null;
+      saveDB(db2);
+      var excluded = excludeSupplierIds.concat([nextSup.id]);
+      tryReassign(bookingId, excluded);
+    }
+  }, expiryHours*3600000);
+}
+
+// ── POLICY PAGE TEMPLATE ──────────────────────────────
+function policyPage(title, content) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>${title} — AquaLink</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23010b14'/%3E%3Cpath d='M16 4 C16 4 27 16 27 21 C27 27 22 31 16 31 C10 31 5 27 5 21 C5 16 16 4 16 4 Z' fill='%231578c8'/%3E%3Cpath d='M16 4 C16 4 27 16 27 21 C27 27 22 31 16 31 C10 31 5 27 5 21 C5 16 16 4 16 4 Z' fill='%2300e5ff' opacity='0.45'/%3E%3Cellipse cx='12' cy='18' rx='4' ry='6' fill='white' opacity='0.3' transform='rotate(-20,12,18)'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',sans-serif;background:#010b14;color:#c8f0ff;min-height:100vh}
+.topbar{background:rgba(1,11,20,0.98);border-bottom:1px solid rgba(0,229,255,0.1);padding:16px 48px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:3px;color:#fff;display:flex;align-items:center;gap:10px;text-decoration:none}
+.lm{width:24px;height:24px;background:linear-gradient(135deg,#1578c8,#00e5ff);clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)}
+.back{padding:8px 18px;border-radius:100px;border:1.5px solid rgba(0,229,255,0.25);color:#c8f0ff;background:transparent;font-family:'Outfit',sans-serif;font-weight:600;font-size:.82rem;cursor:pointer;text-decoration:none;transition:all .2s}
+.back:hover{border-color:#00e5ff;color:#00e5ff}
+.wrap{max-width:760px;margin:0 auto;padding:60px 24px 80px}
+.tag{font-size:.7rem;text-transform:uppercase;letter-spacing:3px;color:#00e5ff;font-weight:700;margin-bottom:10px}
+h1{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:2px;color:#fff;margin-bottom:6px}
+.date{font-size:.78rem;color:#4a7a9b;margin-bottom:40px}
+.section{margin-bottom:32px;padding:24px;background:rgba(6,32,64,0.4);border:1px solid rgba(0,229,255,0.08);border-radius:16px}
+.section h2{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1.5px;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.section h2 span{font-size:1rem}
+.section p{color:#4a7a9b;font-size:.88rem;line-height:1.8}
+.section p + p{margin-top:10px}
+.highlight{color:#c8f0ff}
+.footer{text-align:center;padding-top:40px;border-top:1px solid rgba(0,229,255,0.07);font-size:.78rem;color:#4a7a9b}
+.footer a{color:#00e5ff;text-decoration:none}
+@media(max-width:600px){.topbar{padding:14px 20px}.wrap{padding:40px 16px 60px}h1{font-size:2.2rem}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="logo" href="/"><div class="lm"></div>AQUALINK</a>
+  <a class="back" href="/">← Back to Platform</a>
+</div>
+<div class="wrap">
+  <div class="tag">Legal</div>
+  <h1>${title}</h1>
+  <p class="date">Last updated: May 2026 &nbsp;|&nbsp; AquaLink Global</p>
+  ${content}
+  <div class="footer">
+    <p>Questions? Email us at <a href="mailto:aqualink79@gmail.com">aqualink79@gmail.com</a> — we respond within 48 hours.</p>
+    <p style="margin-top:8px">© 2026 AquaLink Global. All rights reserved.</p>
+  </div>
+</div>
+</body>
+</html>`;
+}
+
+var PRIVACY_CONTENT = `
+  <div class="section"><h2><span>📋</span> 1. Information We Collect</h2><p>We collect your name, email address, organization name, country, and payment details when you register on AquaLink. We also collect booking data, delivery records, and platform interaction history.</p></div>
+  <div class="section"><h2><span>🎯</span> 2. How We Use Your Information</h2><p>Your information is used to process and manage water bookings, send booking confirmations and delivery updates, match you with verified water suppliers, process payments securely, and improve our platform and services.</p></div>
+  <div class="section"><h2><span>💳</span> 3. Payment Information</h2><p>All payments are processed securely through <span class="highlight">Paystack</span>. AquaLink does not store your full card details on our servers. All payment data is encrypted and handled in accordance with PCI DSS standards.</p></div>
+  <div class="section"><h2><span>🤝</span> 4. Data Sharing</h2><p>We do not sell your personal data to third parties. We share your information only with: assigned water suppliers (name and delivery destination only), our payment processor (Paystack), and regulatory or law enforcement authorities when required by law.</p></div>
+  <div class="section"><h2><span>🔒</span> 5. Data Security</h2><p>We implement industry-standard security measures including encrypted data transmission (HTTPS), hashed password storage, and access-controlled databases to protect your information.</p></div>
+  <div class="section"><h2><span>✅</span> 6. Your Rights</h2><p>You may access, correct, or request deletion of your personal data at any time by contacting us at <span class="highlight">aqualink79@gmail.com</span>. We will respond to all requests within 48 hours.</p></div>
+`;
+
+var TERMS_CONTENT = `
+  <div class="section"><h2><span>📜</span> 1. Acceptance of Terms</h2><p>By accessing or using AquaLink, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the platform.</p></div>
+  <div class="section"><h2><span>💧</span> 2. Platform Description</h2><p>AquaLink is an online marketplace that connects water suppliers with consumers including NGOs, governments, and communities. We facilitate bookings and payment collection on behalf of vendors, but the fulfilment and physical delivery of water is the responsibility of the assigned supplier.</p></div>
+  <div class="section"><h2><span>👤</span> 3. User Responsibilities</h2><p>Users agree to provide accurate registration and delivery information, ensure delivery locations are accessible at the agreed time, and pay for bookings in full before dispatch. Misuse of the platform, including fraudulent bookings, may result in account suspension.</p></div>
+  <div class="section"><h2><span>🚚</span> 4. Supplier Responsibilities</h2><p>Verified suppliers agree to deliver water as specified in the booking — correct volume, water type, and destination. Suppliers must maintain quality standards. Failure to fulfil confirmed orders may result in removal from the platform and withholding of payment.</p></div>
+  <div class="section"><h2><span>💰</span> 5. Payments & Fees</h2><p>All payments are collected by AquaLink via Paystack on behalf of the water vendor. AquaLink charges a <span class="highlight">15% platform fee</span> on each transaction. Suppliers receive <span class="highlight">85% of the order value</span>, disbursed within 48 hours of confirmed delivery. No funds are stored permanently on the platform — there are no user or vendor wallets.</p></div>
+  <div class="section"><h2><span>❌</span> 6. Cancellations</h2><p>Cancellations are free before a supplier has been assigned to your booking. After supplier assignment, a cancellation fee may apply. Emergency bookings cannot be cancelled once the supplier has been dispatched. To cancel, email aqualink79@gmail.com with your Booking ID.</p></div>
+  <div class="section"><h2><span>⚖️</span> 7. Limitation of Liability</h2><p>AquaLink acts as an intermediary marketplace. We are not liable for delays or quality issues caused by the supplier, force majeure events, or circumstances beyond our reasonable control. Our total liability shall not exceed the amount paid for the specific booking in question.</p></div>
+  <div class="section"><h2><span>📧</span> 8. Contact</h2><p>For any questions regarding these terms, contact us at <span class="highlight">aqualink79@gmail.com</span>.</p></div>
+`;
+
+var REFUND_CONTENT = `
+  <div class="section"><h2><span>✅</span> Full Refund</h2><p>You are entitled to a full refund in the following circumstances:</p><p>• Your booking is cancelled before a supplier has been assigned.<br>• No verified supplier is available for your location or volume requirement.<br>• Delivery is not completed within 48 hours of the agreed date for Emergency-priority orders.<br>• The booking was made in error and reported within 1 hour of placement.</p></div>
+  <div class="section"><h2><span>⚠️</span> Partial Refund</h2><p>A partial refund may be issued in the following cases:</p><p>• The volume of water delivered is less than the volume booked and paid for.<br>• The water quality does not meet the agreed standard (potable, agricultural, etc.), verified by our team.<br>In these cases, a refund proportional to the undelivered or substandard portion will be processed.</p></div>
+  <div class="section"><h2><span>❌</span> No Refund</h2><p>No refund will be issued if:</p><p>• Delivery was completed as specified in the booking.<br>• The recipient was unavailable at the delivery location at the agreed time.<br>• Incorrect delivery information was provided by the customer.<br>• The cancellation request is made after the supplier has been dispatched for Standard or Urgent bookings.</p></div>
+  <div class="section"><h2><span>🔄</span> Disputes Between Buyers and Vendors</h2><p>If a dispute arises between a buyer and a supplier, AquaLink will act as the intermediary. Funds held by the platform will not be disbursed to the supplier until the dispute is resolved. To raise a dispute, email <span class="highlight">aqualink79@gmail.com</span> with your Booking ID and a description of the issue within <span class="highlight">48 hours</span> of the scheduled delivery date.</p></div>
+  <div class="section"><h2><span>⏱️</span> How to Request a Refund</h2><p>Email <span class="highlight">aqualink79@gmail.com</span> with your Booking ID and the reason for your refund request. Approved refunds are processed within <span class="highlight">5–7 business days</span> back to your original payment method.</p></div>
+`;
+
+var SHIPPING_CONTENT = `
+  <div class="section"><h2><span>🚚</span> How Delivery Works</h2><p>AquaLink is an online marketplace — we are not a fulfilment centre. Water products are delivered directly from the assigned third-party vendor (water supplier) to the customer's specified delivery location. AquaLink coordinates and tracks the delivery but does not physically handle the water.</p></div>
+  <div class="section"><h2><span>📍</span> Delivery Areas</h2><p>AquaLink currently serves customers across Africa, Asia, the Middle East, and South America. Available delivery areas depend on the verified suppliers in our network. If no supplier is available in your region, you will be notified and a full refund will be issued.</p></div>
+  <div class="section"><h2><span>⏰</span> Delivery Timeframes</h2><p>Estimated delivery times are based on the priority level selected at booking:</p><p>• <span class="highlight">Emergency</span> — 24 to 48 hours after payment confirmation.<br>• <span class="highlight">Urgent</span> — 2 to 4 business days after payment confirmation.<br>• <span class="highlight">Standard</span> — 7 to 14 business days after payment confirmation.</p><p>Timeframes are estimates and may vary depending on supplier availability and location accessibility.</p></div>
+  <div class="section"><h2><span>💳</span> Shipping Costs</h2><p>Delivery costs are included in the booking price displayed at checkout. There are no hidden delivery fees. The price you pay is the total amount — AquaLink retains a 15% platform fee and disburses 85% to the supplier upon confirmed delivery.</p></div>
+  <div class="section"><h2><span>📦</span> Order Tracking</h2><p>Once your booking is confirmed and paid, you can track its status in real time from your AquaLink dashboard. Status updates include: Pending, Active (supplier assigned), In Transit, and Completed.</p></div>
+  <div class="section"><h2><span>📧</span> Delivery Issues</h2><p>If your delivery has not arrived within the estimated timeframe, contact us immediately at <span class="highlight">aqualink79@gmail.com</span> with your Booking ID. We will investigate and resolve the issue within 24 hours, including issuing a refund where applicable under our Refund Policy.</p></div>
+`;
+
+var PRICING_CONTENT = `
+  <div class="section"><h2><span>💧</span> How Pricing Works</h2><p>AquaLink connects you with verified water suppliers. Prices are set by individual suppliers based on your location, volume, and water type. A <span class="highlight">15% service fee</span> is automatically added at checkout. You will always see your full total before confirming payment — no hidden charges.</p></div>
+  <div class="section"><h2><span>📍</span> What Affects Your Price?</h2><p>The final price of your order depends on several factors:</p><p>• <span class="highlight">Water Type</span> — Potable, Agricultural, or Industrial water are priced differently by suppliers.<br>• <span class="highlight">Volume</span> — The amount of water you need directly affects the total cost.<br>• <span class="highlight">Location</span> — Distance from the supplier to your delivery address affects logistics costs.<br>• <span class="highlight">Priority Level</span> — Emergency and Urgent orders may attract higher rates than Standard orders.</p></div>
+  <div class="section"><h2><span>💳</span> Service Fee</h2><p>AquaLink charges a flat <span class="highlight">15% service fee</span> on every transaction. This fee covers platform maintenance, payment processing, order coordination, and customer support. The service fee is always included in the final total shown at checkout — you will never be charged anything extra after confirming your order.</p></div>
+  <div class="section"><h2><span>🔒</span> No Hidden Charges</h2><p>What you see at checkout is what you pay. Delivery costs are included in the supplier's price. There are no surprise fees, no extra delivery charges, and no charges after payment is made.</p></div>
+  <div class="section"><h2><span>💰</span> Payment Methods</h2><p>AquaLink accepts all major payment methods through Paystack — including debit cards, bank transfers, and USSD. All transactions are secured and encrypted.</p></div>
+  <div class="section"><h2><span>❓</span> Questions About Pricing?</h2><p>If you have any questions about pricing or need a custom quote for a large order, contact us at <span class="highlight">aqualink79@gmail.com</span> or visit our platform to place a booking and see live supplier prices.</p></div>
+`;
+
+// ── HTML APP ──────────────────────────────────────────
 var APP = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -899,7 +1232,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div id="step-pay" class="pay-box" style="margin-top:12px;display:none">
         <p style="font-size:.88rem;font-weight:600;color:var(--ice);margin-bottom:4px">Step 2 — Complete Payment</p>
         <p style="font-size:.82rem;color:var(--muted);margin-bottom:8px">Supplier selected: <span id="selected-sup-name" style="color:var(--glow);font-weight:600"></span></p>
-        <div id="pay-amount" style="font-family:Bebas Neue,sans-serif;font-size:1.8rem;color:var(--glow);letter-spacing:2px;margin-bottom:12px">—</div>
+        <div id="pay-amount" style="font-family:Bebas Neue,sans-serif;font-size:1.8rem;color:var(--glow);letter-spacing:2px;margin-bottom:12px">-</div>
         <button class="btn btn-p" onclick="payNow()" style="width:100%;padding:13px;border-radius:14px">💳 PAY NOW WITH PAYSTACK</button>
         <p style="font-size:.72rem;color:var(--muted);margin-top:8px">Secure. Supports cards, bank transfer and USSD.</p>
       </div>
