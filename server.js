@@ -889,17 +889,17 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="big">💧</div><h3>BOOKING RECEIVED!</h3>
       <div class="id-chip" id="s-id">AQL-XXXXX</div>
       <p id="s-msg" style="color:var(--muted);font-size:.86rem;margin-bottom:16px"></p>
-      <!-- Step 1: Select Supplier -->
+      
       <div id="step-select-supplier" class="pay-box">
         <p style="font-size:.88rem;font-weight:600;color:var(--ice);margin-bottom:6px">Step 1 — Select a Water Supplier</p>
         <p style="font-size:.82rem;color:var(--muted);margin-bottom:12px">Choose from our verified suppliers. You will see their price before paying.</p>
         <button class="btn btn-p" onclick="openSupplierSelectFromBook()" style="width:100%;padding:13px;border-radius:14px">🚚 VIEW AVAILABLE SUPPLIERS</button>
       </div>
-      <!-- Step 2: Pay -->
+
       <div id="step-pay" class="pay-box" style="margin-top:12px;display:none">
         <p style="font-size:.88rem;font-weight:600;color:var(--ice);margin-bottom:4px">Step 2 — Complete Payment</p>
         <p style="font-size:.82rem;color:var(--muted);margin-bottom:8px">Supplier selected: <span id="selected-sup-name" style="color:var(--glow);font-weight:600"></span></p>
-        <div id="pay-amount" style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--glow);letter-spacing:2px;margin-bottom:12px">—</div>
+        <div id="pay-amount" style="font-family:Bebas Neue,sans-serif;font-size:1.8rem;color:var(--glow);letter-spacing:2px;margin-bottom:12px">—</div>
         <button class="btn btn-p" onclick="payNow()" style="width:100%;padding:13px;border-radius:14px">💳 PAY NOW WITH PAYSTACK</button>
         <p style="font-size:.72rem;color:var(--muted);margin-top:8px">Secure. Supports cards, bank transfer and USSD.</p>
       </div>
@@ -951,7 +951,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="dcard"><div class="dcard-label">Total Earned</div><div class="dcard-val" id="sup-earned">-</div><div class="dcard-tag">NGN (85% of orders)</div></div>
     </div>
 
-    <!-- PRICING SETUP -->
+    
     <div class="panel" id="sup-pricing-panel">
       <div class="ptit">💰 My Pricing Setup</div>
       <p style="color:var(--muted);font-size:.82rem;margin-bottom:16px">Set your price per litre for each water type. Customers will see these prices when selecting a supplier.</p>
@@ -968,7 +968,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div id="pricing-msg" style="font-size:.82rem;margin-top:10px;display:none"></div>
     </div>
 
-    <!-- PENDING ORDERS -->
+    
     <div class="panel">
       <div class="ptit">📋 Orders Awaiting My Response</div>
       <p style="color:var(--muted);font-size:.82rem;margin-bottom:14px">Respond to each order before the time limit expires. Unresponded orders will be automatically reassigned.</p>
@@ -976,7 +976,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div id="sup-pending-empty" class="empty" style="display:none"><div style="font-size:2rem;margin-bottom:10px">📦</div><p>No pending orders right now.</p></div>
     </div>
 
-    <!-- ORDER HISTORY -->
+    
     <div class="panel">
       <div class="ptit">📜 Order History</div>
       <div class="tscroll"><table><thead><tr><th>Booking ID</th><th>Destination</th><th>Volume</th><th>Priority</th><th>Response</th><th>Reason</th><th>Date</th></tr></thead><tbody id="sup-history-rows"></tbody></table></div>
@@ -989,7 +989,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     </div>
   </div>
 
-  <!-- ADMIN: DISPUTES & ASSIGNMENTS -->
+  
   <div class="page" id="pg-admin-disputes">
     <div class="ptitle">Disputes & Assignments</div>
     <p class="psub">Full visibility of all supplier assignments, rejections and disputes.</p>
@@ -1005,7 +1005,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     </table></div><div id="disp-empty" class="empty" style="display:none">No assignments yet.</div></div>
   </div>
 
-  <!-- SUPPLIER SELECTION MODAL -->
+  
   <div class="overlay" id="supplier-select-overlay" onclick="closeSupModal(event)">
     <div class="mbox" style="max-width:600px">
       <button class="mclose" onclick="closeSupModal()">✕</button>
@@ -1017,7 +1017,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     </div>
   </div>
 
-  <!-- REJECT ORDER MODAL -->
+  
   <div class="overlay" id="reject-overlay" onclick="closeRejectModal(event)">
     <div class="mbox">
       <button class="mclose" onclick="closeRejectModal()">✕</button>
