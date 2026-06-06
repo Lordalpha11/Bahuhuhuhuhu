@@ -963,9 +963,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     <h2 class="sec-title">WHO CAN USE <em>AQUALINK</em></h2>
     <p class="sec-sub">Whether you need water or supply it — AquaLink is built for you.</p>
     <div class="grid3">
-      <div class="card-box"><div class="card-icon">🏛️</div><h4>GOVERNMENTS</h4><p>Manage national water distribution, respond to crises, and coordinate emergency relief at scale.</p><button class="card-link" onclick="openAuth('register','consumer')">Register as Government →</button></div>
-      <div class="card-box"><div class="card-icon">🌍</div><h4>NGOs & AID ORGS</h4><p>Book emergency water supplies for affected communities with priority processing for humanitarian organizations.</p><button class="card-link" onclick="openAuth('register','consumer')">Register as NGO →</button></div>
-      <div class="card-box"><div class="card-icon">👥</div><h4>COMMUNITIES</h4><p>Individual families and communities can book potable water for drinking, sanitation, or agricultural use.</p><button class="card-link" onclick="openAuth('register','consumer')">Register as Community →</button></div>
+      <div class="card-box"><div class="card-icon">🏛️</div><h4>GOVERNMENTS</h4><p>Manage national water distribution, respond to crises, and coordinate emergency relief at scale.</p><button class="card-link" onclick="openAuth('register','consumer')">Register as Government &rarr;</button></div>
+      <div class="card-box"><div class="card-icon">🌍</div><h4>NGOs & AID ORGS</h4><p>Book emergency water supplies for affected communities with priority processing for humanitarian organizations.</p><button class="card-link" onclick="openAuth('register','consumer')">Register as NGO &rarr;</button></div>
+      <div class="card-box"><div class="card-icon">👥</div><h4>COMMUNITIES</h4><p>Individual families and communities can book potable water for drinking, sanitation, or agricultural use.</p><button class="card-link" onclick="openAuth('register','consumer')">Register as Community &rarr;</button></div>
     </div>
   </div>
   <div class="sup-cta-sec" id="suppliers">
@@ -979,7 +979,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
           <p>Water companies, tanker operators, treatment plants and distributors — list your capacity and receive booking requests from NGOs, governments and communities in your region.</p>
           <div class="sup-perks"><span>✅ Free to list</span><span>✅ Receive booking requests</span><span>✅ Expand your customer base</span><span>✅ Verified supplier badge</span><span>✅ Earn 85% of order value</span></div>
         </div>
-        <button class="btn-hp" onclick="openAuth('register','supplier')">APPLY AS SUPPLIER →</button>
+        <button class="btn-hp" onclick="openAuth('register','supplier')">APPLY AS SUPPLIER &rarr;</button>
       </div>
     </div>
   </div>
@@ -1018,7 +1018,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
           <select class="finp" id="c-subj"><option>I want to book water</option><option>I want to become a supplier</option><option>Partnership inquiry</option><option>Technical support</option><option>General question</option></select>
           <textarea class="finp" id="c-msg" placeholder="Your message..."></textarea>
           <div class="c-result" id="c-result"></div>
-          <button class="cbtn" onclick="sendContact()">SEND MESSAGE →</button>
+          <button class="cbtn" onclick="sendContact()">SEND MESSAGE &rarr;</button>
         </div>
       </div>
     </div>
@@ -1063,7 +1063,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <input class="minp" id="l-email" type="email" placeholder="your@email.com">
       <label class="mlabel">Password</label>
       <input class="minp" id="l-pass" type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()">
-      <button class="mbtn" id="l-btn" onclick="doLogin()">LOGIN →</button>
+      <button class="mbtn" id="l-btn" onclick="doLogin()">LOGIN &rarr;</button>
       <p class="mhint">Demo: admin@aqualink.org / admin123</p>
     </div>
     <div id="auth-register" style="display:none">
@@ -1091,7 +1091,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <label class="mlabel">Regions You Cover</label>
         <input class="minp" id="r-regions" type="text" placeholder="e.g. Lagos, Abuja, South West Nigeria">
       </div>
-      <button class="mbtn" id="r-btn" onclick="doRegister()">CREATE ACCOUNT →</button>
+      <button class="mbtn" id="r-btn" onclick="doRegister()">CREATE ACCOUNT &rarr;</button>
     </div>
   </div>
 </div>
@@ -1125,7 +1125,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="panel">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
           <div class="ptit" style="margin:0">Recent Bookings</div>
-          <button class="btn btn-g" style="padding:5px 12px;font-size:.76rem" onclick="goPage('admin-bookings')">View All →</button>
+          <button class="btn btn-g" style="padding:5px 12px;font-size:.76rem" onclick="goPage('admin-bookings')">View All &rarr;</button>
         </div>
         <div class="tscroll"><table><thead><tr><th>ID</th><th>Destination</th><th>Volume</th><th>Priority</th><th>Status</th><th>Paid</th></tr></thead><tbody id="a-recent"></tbody></table></div>
       </div>
@@ -1198,7 +1198,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="panel">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
           <div class="ptit" style="margin:0">My Recent Bookings</div>
-          <button class="btn btn-g" style="padding:5px 12px;font-size:.76rem" onclick="goPage('bookings')">View All →</button>
+          <button class="btn btn-g" style="padding:5px 12px;font-size:.76rem" onclick="goPage('bookings')">View All &rarr;</button>
         </div>
         <div class="tscroll"><table><thead><tr><th>ID</th><th>Destination</th><th>Volume</th><th>Status</th><th>Paid</th></tr></thead><tbody id="c-recent"></tbody></table></div>
       </div>
@@ -1250,7 +1250,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <div class="fg"><label>Notes</label><input type="text" id="b-notes" placeholder="Special instructions..."></div>
       </div>
       <div id="b-err" style="background:rgba(255,107,107,0.12);border:1px solid rgba(255,107,107,0.25);border-radius:10px;padding:9px 13px;color:var(--coral);font-size:.82rem;margin-top:12px;display:none"></div>
-      <div class="btns"><button class="btn btn-p" id="b-btn" onclick="submitBook()">CONFIRM BOOKING →</button><button class="btn btn-g" onclick="resetBook()">Clear</button></div>
+      <div class="btns"><button class="btn btn-p" id="b-btn" onclick="submitBook()">CONFIRM BOOKING &rarr;</button><button class="btn btn-g" onclick="resetBook()">Clear</button></div>
     </div>
   </div>
   <div class="page" id="pg-bookings">
@@ -1378,8 +1378,8 @@ function clrMsg(){document.getElementById('merr').style.display='none';document.
 function showErr(m){var e=document.getElementById('merr');e.textContent=m;e.style.display='block';}
 function showOk(m){var e=document.getElementById('mok');e.textContent=m;e.style.display='block';}
 function selType(t){SEL_TYPE=t;document.getElementById('tc-consumer').classList.toggle('sel',t==='consumer');document.getElementById('tc-supplier').classList.toggle('sel',t==='supplier');document.getElementById('r-sup-extra').style.display=t==='supplier'?'block':'none';}
-async function doLogin(){clrMsg();var em=document.getElementById('l-email').value.trim(),pw=document.getElementById('l-pass').value;if(!em||!pw){showErr('Please enter your email and password.');return;}var btn=document.getElementById('l-btn');btn.disabled=true;btn.textContent='Logging in...';var r=await api('POST','/login',{email:em,password:pw});btn.disabled=false;btn.textContent='LOGIN →';if(r.error){showErr(r.error);return;}TOKEN=r.token;ME=r.user;localStorage.setItem('aq_token',TOKEN);showOk('Welcome back, '+ME.name+'!');setTimeout(function(){closeAuth();startApp();},700);}
-async function doRegister(){clrMsg();var name=document.getElementById('r-name').value.trim(),email=document.getElementById('r-email').value.trim(),pass=document.getElementById('r-pass').value,country=document.getElementById('r-country').value.trim(),org=document.getElementById('r-org').value.trim();if(!name||!email||!pass||!country){showErr('Name, email, password and country are required.');return;}if(pass.length<6){showErr('Password must be at least 6 characters.');return;}var sup={};if(SEL_TYPE==='supplier'){sup={waterTypes:document.getElementById('r-water-types').value,capacity:document.getElementById('r-capacity').value,regions:document.getElementById('r-regions').value};}var role=SEL_TYPE==='supplier'?'supplier':SEL_TYPE==='admin'?'admin':'user';var btn=document.getElementById('r-btn');btn.disabled=true;btn.textContent='Creating...';var r=await api('POST','/register',{name:name,email:email,password:pass,country:country,organization:org,role:role,userType:SEL_TYPE,supplierData:sup});btn.disabled=false;btn.textContent='CREATE ACCOUNT →';if(r.error){showErr(r.error);return;}TOKEN=r.token;ME=r.user;localStorage.setItem('aq_token',TOKEN);showOk(r.message);setTimeout(function(){closeAuth();startApp();},800);}
+async function doLogin(){clrMsg();var em=document.getElementById('l-email').value.trim(),pw=document.getElementById('l-pass').value;if(!em||!pw){showErr('Please enter your email and password.');return;}var btn=document.getElementById('l-btn');btn.disabled=true;btn.textContent='Logging in...';var r=await api('POST','/login',{email:em,password:pw});btn.disabled=false;btn.textContent='LOGIN &rarr;';if(r.error){showErr(r.error);return;}TOKEN=r.token;ME=r.user;localStorage.setItem('aq_token',TOKEN);showOk('Welcome back, '+ME.name+'!');setTimeout(function(){closeAuth();startApp();},700);}
+async function doRegister(){clrMsg();var name=document.getElementById('r-name').value.trim(),email=document.getElementById('r-email').value.trim(),pass=document.getElementById('r-pass').value,country=document.getElementById('r-country').value.trim(),org=document.getElementById('r-org').value.trim();if(!name||!email||!pass||!country){showErr('Name, email, password and country are required.');return;}if(pass.length<6){showErr('Password must be at least 6 characters.');return;}var sup={};if(SEL_TYPE==='supplier'){sup={waterTypes:document.getElementById('r-water-types').value,capacity:document.getElementById('r-capacity').value,regions:document.getElementById('r-regions').value};}var role=SEL_TYPE==='supplier'?'supplier':SEL_TYPE==='admin'?'admin':'user';var btn=document.getElementById('r-btn');btn.disabled=true;btn.textContent='Creating...';var r=await api('POST','/register',{name:name,email:email,password:pass,country:country,organization:org,role:role,userType:SEL_TYPE,supplierData:sup});btn.disabled=false;btn.textContent='CREATE ACCOUNT &rarr;';if(r.error){showErr(r.error);return;}TOKEN=r.token;ME=r.user;localStorage.setItem('aq_token',TOKEN);showOk(r.message);setTimeout(function(){closeAuth();startApp();},800);}
 function doLogout(){TOKEN=null;ME=null;localStorage.removeItem('aq_token');document.getElementById('app').style.display='none';document.getElementById('landing').style.display='block';toast('👋','Logged out!');}
 function goLanding(){document.getElementById('app').style.display='none';document.getElementById('landing').style.display='block';}
 function startApp(){document.getElementById('landing').style.display='none';document.getElementById('app').style.display='block';document.getElementById('tav').textContent=ME.name[0].toUpperCase();document.getElementById('tuname').textContent=ME.name.split(' ')[0];document.getElementById('turole').textContent=ME.userType==='supplier'?'Supplier':ME.role==='admin'?'Admin':'Consumer';document.getElementById('b-date').value=new Date(Date.now()+7*864e5).toISOString().slice(0,10);var nav=document.getElementById('tnav');nav.innerHTML='';if(ME.role==='admin'){addNav(nav,'Overview','admin');addNav(nav,'Bookings','admin-bookings');addNav(nav,'Suppliers','admin-suppliers');addNav(nav,'Users','admin-users');addNav(nav,'Revenue','admin-revenue');addNav(nav,'Disputes','admin-disputes');goPage('admin');}else if(ME.userType==='supplier'){addNav(nav,'My Dashboard','supplier');addNav(nav,'All Suppliers','suppliers');goPage('supplier');}else{addNav(nav,'Dashboard','dashboard');addNav(nav,'Book Water','book');addNav(nav,'My Bookings','bookings');addNav(nav,'Suppliers','suppliers');goPage('dashboard');}}
@@ -1560,21 +1560,17 @@ async function openSupplierSelect(bookingId,waterType,volumeLitres){
   document.getElementById('sup-select-loading').style.display='none';
   var sups=r.suppliers||[];
   if(sups.length===0){document.getElementById('sup-select-empty').style.display='block';return;}
-  document.getElementById('sup-select-list').innerHTML=sups.map(function(s){
-    return'<div style="background:rgba(6,32,64,0.6);border:1.5px solid rgba(0,229,255,0.12);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s" onclick="selectSupplier(\''+s.id+'\',\''+s.name+'\','+s.totalWithFee+','+s.estimatedBase+','+s.serviceFee+')" onmouseover="this.style.borderColor=\'rgba(0,229,255,0.4)\'" onmouseout="this.style.borderColor=\'rgba(0,229,255,0.12)\'">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
-      +'<div style="font-family:Bebas Neue,sans-serif;font-size:1.1rem;letter-spacing:1.5px;color:#fff">'+s.name+'</div>'
-      +'<div style="font-family:Bebas Neue,sans-serif;font-size:1.3rem;color:var(--glow)">NGN '+s.totalWithFee.toLocaleString()+'</div>'
-      +'</div>'
-      +'<div style="display:flex;gap:16px;font-size:.78rem;color:var(--muted)">'
-      +'<span>📍 '+s.country+'</span><span>💧 '+s.waterTypes+'</span>'
-      +'</div>'
-      +'<div style="margin-top:8px;font-size:.74rem;color:var(--muted)">'
-      +'Base: NGN '+s.estimatedBase.toLocaleString()+' + 15% fee: NGN '+s.serviceFee.toLocaleString()
-      +'</div>'
-      +'<div style="margin-top:10px;padding:7px 14px;background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.2);border-radius:8px;color:var(--glow);font-size:.78rem;font-weight:600;text-align:center">Select This Supplier →</div>'
-      +'</div>';
-  }).join('');
+  var listEl=document.getElementById('sup-select-list');
+  listEl.innerHTML='';
+  sups.forEach(function(s){
+    var div=document.createElement('div');
+    div.style.cssText='background:rgba(6,32,64,0.6);border:1.5px solid rgba(0,229,255,0.12);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s;margin-bottom:8px';
+    div.addEventListener('mouseover',function(){this.style.borderColor='rgba(0,229,255,0.4)';});
+    div.addEventListener('mouseout',function(){this.style.borderColor='rgba(0,229,255,0.12)';});
+    (function(sid,sname,total,base,fee){div.addEventListener('click',function(){selectSupplier(sid,sname,total,base,fee);});})(s.id,s.name,s.totalWithFee,s.estimatedBase,s.serviceFee);
+    div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-family:Bebas Neue,sans-serif;font-size:1.1rem;letter-spacing:1.5px;color:#fff">'+s.name+'</div><div style="font-family:Bebas Neue,sans-serif;font-size:1.3rem;color:#00e5ff">NGN '+s.totalWithFee.toLocaleString()+'</div></div><div style="display:flex;gap:16px;font-size:.78rem;color:#4a7a9b"><span>Location: '+s.country+'</span><span>Type: '+s.waterTypes+'</span></div><div style="margin-top:8px;font-size:.74rem;color:#4a7a9b">Base: NGN '+s.estimatedBase.toLocaleString()+' + 15% fee: NGN '+s.serviceFee.toLocaleString()+'</div><div style="margin-top:10px;padding:7px 14px;background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.2);border-radius:8px;color:#00e5ff;font-size:.78rem;font-weight:600;text-align:center">Select This Supplier</div>';
+    listEl.appendChild(div);
+  });
 }
 
 async function selectSupplier(supId,supName,total,base,fee){
@@ -1591,7 +1587,7 @@ async function selectSupplier(supId,supName,total,base,fee){
 function closeSupModal(e){if(!e||e.target===document.getElementById('supplier-select-overlay'))document.getElementById('supplier-select-overlay').classList.remove('open');}
 function pp(el){el.closest('.pills').querySelectorAll('.pill').forEach(function(p){p.classList.remove('on');});el.classList.add('on');}
 function uv(v){var n=parseInt(v);document.getElementById('vd').textContent=n>=1e6?(n/1e6).toFixed(1)+'M L':n>=1000?(n/1000).toFixed(0)+'K L':n+' L';}
-async function submitBook(){document.getElementById('b-err').style.display='none';var country=document.getElementById('b-country').value;if(!country){var e=document.getElementById('b-err');e.textContent='Please select a destination country.';e.style.display='block';return;}var pill=document.querySelector('.pill.on'),type=pill?pill.textContent.trim():'Potable';var btn=document.getElementById('b-btn');btn.disabled=true;btn.textContent='Confirming...';var r=await api('POST','/bookings',{destination:country,city:document.getElementById('b-city').value,waterType:type,volumeLitres:parseInt(document.getElementById('vs').value),priority:document.getElementById('b-pri').value,requestorType:document.getElementById('b-rtype').value,requiredBy:document.getElementById('b-date').value,notes:document.getElementById('b-notes').value});btn.disabled=false;btn.textContent='CONFIRM BOOKING →';if(r.error){var e=document.getElementById('b-err');e.textContent=r.error;e.style.display='block';return;}document.getElementById('book-form').style.display='none';document.getElementById('book-success').style.display='block';document.getElementById('s-id').textContent=r.booking.id;document.getElementById('s-msg').textContent=r.message;BOOKING_ID=r.booking.id;BOOKING_VOL=r.booking.volumeLitres;BOOKING_TYPE=type;SELECTED_SUPPLIER=null;document.getElementById('step-select-supplier').style.display='block';document.getElementById('step-pay').style.display='none';toast('✅','Booking '+r.booking.id+' received! Now select a supplier.');}
+async function submitBook(){document.getElementById('b-err').style.display='none';var country=document.getElementById('b-country').value;if(!country){var e=document.getElementById('b-err');e.textContent='Please select a destination country.';e.style.display='block';return;}var pill=document.querySelector('.pill.on'),type=pill?pill.textContent.trim():'Potable';var btn=document.getElementById('b-btn');btn.disabled=true;btn.textContent='Confirming...';var r=await api('POST','/bookings',{destination:country,city:document.getElementById('b-city').value,waterType:type,volumeLitres:parseInt(document.getElementById('vs').value),priority:document.getElementById('b-pri').value,requestorType:document.getElementById('b-rtype').value,requiredBy:document.getElementById('b-date').value,notes:document.getElementById('b-notes').value});btn.disabled=false;btn.textContent='CONFIRM BOOKING &rarr;';if(r.error){var e=document.getElementById('b-err');e.textContent=r.error;e.style.display='block';return;}document.getElementById('book-form').style.display='none';document.getElementById('book-success').style.display='block';document.getElementById('s-id').textContent=r.booking.id;document.getElementById('s-msg').textContent=r.message;BOOKING_ID=r.booking.id;BOOKING_VOL=r.booking.volumeLitres;BOOKING_TYPE=type;SELECTED_SUPPLIER=null;document.getElementById('step-select-supplier').style.display='block';document.getElementById('step-pay').style.display='none';toast('✅','Booking '+r.booking.id+' received! Now select a supplier.');}
 function openSupplierSelectFromBook(){openSupplierSelect(BOOKING_ID,BOOKING_TYPE||'Potable',BOOKING_VOL);}
 var BOOKING_TYPE='Potable';
 // Override selectSupplier to show pay step
@@ -2006,3 +2002,4 @@ http.createServer(async function(req, res) {
   console.log('   /privacy   /terms   /refund   /shipping');
   console.log('========================================\n');
 });
+
