@@ -1035,10 +1035,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         </div>
         <div class="contact-form">
           <h3>SEND US A MESSAGE</h3>
-          <input class="finp" id="c-name" type="text" placeholder="Your Name">
-          <input class="finp" id="c-email" type="email" placeholder="Your Email">
-          <select class="finp" id="c-subj"><option>I want to book water</option><option>I want to become a supplier</option><option>Partnership inquiry</option><option>Technical support</option><option>General question</option></select>
-          <textarea class="finp" id="c-msg" placeholder="Your message..."></textarea>
+          <input class="finp" id="c-name" type="text" placeholder="Your Full Name">
+          <input class="finp" id="c-email" type="email" placeholder="Your Email Address">
+          <input class="finp" id="c-phone" type="tel" placeholder="Your Phone Number (Optional)">
+          <select class="finp" id="c-subj"><option>I want to book water</option><option>I want to become a supplier</option><option>Partnership inquiry</option><option>Technical support</option><option>Press or media inquiry</option><option>NGO or government partnership</option><option>General question</option></select>
+          <textarea class="finp" id="c-msg" placeholder="Tell us more about your request..."></textarea>
           <div class="c-result" id="c-result"></div>
           <button class="cbtn" onclick="sendContact()">SEND MESSAGE &rarr;</button>
         </div>
@@ -1243,24 +1244,22 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     <div id="book-success" class="success-wrap" style="display:none">
       <div class="big">💧</div><h3>BOOKING RECEIVED!</h3>
       <div class="id-chip" id="s-id">AQL-XXXXX</div>
-      <p id="s-msg" style="color:var(--muted);font-size:.86rem;margin-bottom:16px"></p>
-      
+      <p id="s-msg" style="color:var(--muted);font-size:.86rem;margin-bottom:8px"></p>
+      <div style="background:rgba(6,214,160,0.06);border:1px solid rgba(6,214,160,0.15);border-radius:12px;padding:14px;margin-bottom:16px;font-size:.82rem;color:var(--muted);text-align:left;line-height:1.8"><div style="color:var(--green);font-weight:600;margin-bottom:6px">What happens next?</div><div>1. Select a verified water supplier below</div><div>2. Review the price including 15% service fee</div><div>3. Complete payment securely via Paystack</div><div>4. Supplier confirms and delivery begins</div></div>
       <div id="step-select-supplier" class="pay-box">
-        <p style="font-size:.88rem;font-weight:600;color:var(--ice);margin-bottom:6px">Step 1 — Select a Water Supplier</p>
-        <p style="font-size:.82rem;color:var(--muted);margin-bottom:12px">Choose from our verified suppliers. You will see their price before paying.</p>
+        <p style="font-size:.88rem;font-weight:600;color:var(--ice);margin-bottom:6px">Step 1 &mdash; Select a Water Supplier</p>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:12px">Choose from our verified suppliers. You will see their full price before paying.</p>
         <button class="btn btn-p" onclick="openSupplierSelectFromBook()" style="width:100%;padding:13px;border-radius:14px">🚚 VIEW AVAILABLE SUPPLIERS</button>
       </div>
-
       <div id="step-pay" class="pay-box" style="margin-top:12px;display:none">
-        <p style="font-size:.88rem;font-weight:600;color:var(--ice);margin-bottom:4px">Step 2 — Complete Payment</p>
+        <p style="font-size:.88rem;font-weight:600;color:var(--ice);margin-bottom:4px">Step 2 &mdash; Complete Payment</p>
         <p style="font-size:.82rem;color:var(--muted);margin-bottom:8px">Supplier selected: <span id="selected-sup-name" style="color:var(--glow);font-weight:600"></span></p>
         <div id="pay-amount" style="font-family:Bebas Neue,sans-serif;font-size:1.8rem;color:var(--glow);letter-spacing:2px;margin-bottom:12px">-</div>
         <button class="btn btn-p" onclick="payNow()" style="width:100%;padding:13px;border-radius:14px">💳 PAY NOW WITH PAYSTACK</button>
-        <p style="font-size:.72rem;color:var(--muted);margin-top:8px">Secure. Supports cards, bank transfer and USSD.</p>
+        <p style="font-size:.72rem;color:var(--muted);margin-top:8px">Secure payment. Supports cards, bank transfer and USSD.</p>
       </div>
-      <button class="btn btn-g" style="margin-top:12px" onclick="goPage('bookings')">VIEW MY BOOKINGS</button>
+      <button class="btn btn-g" style="margin-top:12px;width:100%" onclick="goPage('bookings')">VIEW MY BOOKINGS</button>
     </div>
-    <div class="panel" id="book-form">
       <div class="form-grid">
         <div class="fg"><label>Destination Country *</label><select id="b-country"><option value="">Select country...</option><option>Nigeria</option><option>Kenya</option><option>Ethiopia</option><option>Somalia</option><option>South Africa</option><option>Ghana</option><option>Egypt</option><option>Sudan</option><option>Niger</option><option>Mali</option><option>Chad</option><option>DR Congo</option><option>India</option><option>Bangladesh</option><option>Pakistan</option><option>Afghanistan</option><option>Yemen</option><option>Syria</option><option>Brazil</option><option>Colombia</option><option>Haiti</option><option>Venezuela</option><option>Indonesia</option><option>Philippines</option><option>Myanmar</option><option>Mexico</option></select></div>
         <div class="fg"><label>City / Region</label><input type="text" id="b-city" placeholder="e.g. Lagos, Kano"></div>
@@ -1290,6 +1289,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   <div class="page" id="pg-suppliers">
     <div class="ptitle">Water Suppliers</div><p class="psub">Browse verified suppliers and their prices. Select a supplier when booking.</p>
     <div class="info-banner">ℹ️ Prices shown are per litre. A 15% AquaLink service fee is added at checkout. All prices are set by individual suppliers.</div>
+    <div class="frow" style="margin-bottom:16px">
+      <input type="text" id="sup-search" placeholder="Search by name or organization..." oninput="filterSuppliers()" style="flex:1;min-width:140px;padding:9px 14px;background:rgba(1,11,20,0.8);border:1.5px solid rgba(0,229,255,0.15);border-radius:12px;color:#fff;font-family:Outfit,sans-serif;font-size:.86rem;outline:none">
+      <select id="sup-filter-type" onchange="filterSuppliers()" style="padding:9px 14px;background:rgba(1,11,20,0.8);border:1.5px solid rgba(0,229,255,0.15);border-radius:12px;color:#fff;font-family:Outfit,sans-serif;font-size:.86rem;outline:none"><option value="all">All Water Types</option><option value="potable">Potable</option><option value="agricultural">Agricultural</option><option value="industrial">Industrial</option></select>
+      <select id="sup-filter-sort" onchange="filterSuppliers()" style="padding:9px 14px;background:rgba(1,11,20,0.8);border:1.5px solid rgba(0,229,255,0.15);border-radius:12px;color:#fff;font-family:Outfit,sans-serif;font-size:.86rem;outline:none"><option value="default">Sort: Default</option><option value="price-asc">Price: Low to High</option><option value="price-desc">Price: High to Low</option></select>
+    </div>
     <div id="pub-sup-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;margin-top:4px"></div>
     <div id="pub-sup-empty" class="empty" style="display:none"><div style="font-size:2rem;margin-bottom:10px">🚚</div><p>No verified suppliers yet. Check back soon!</p></div>
   </div>
@@ -1417,44 +1421,45 @@ async function updStat(id,status){var r=await api('PUT','/bookings/'+id+'/status
 async function cancelB(id){if(!confirm('Cancel booking '+id+'?'))return;var r=await api('DELETE','/bookings/'+id);if(r.error){toast('❌',r.error);return;}toast('🗑️','Cancelled.');loadBookings();}
 async function loadPubSuppliers(){
   var r=await api('GET','/suppliers');
-  var verified=(r.suppliers||[]).filter(function(s){return s.status==='verified';});
+  ALL_SUPPLIERS=(r.suppliers||[]).filter(function(s){return s.status==='verified';});
+  renderSupplierCards(ALL_SUPPLIERS);
+}
+var ALL_SUPPLIERS=[];
+function filterSuppliers(){
+  var search=(document.getElementById('sup-search')?document.getElementById('sup-search').value:'').toLowerCase();
+  var type=document.getElementById('sup-filter-type')?document.getElementById('sup-filter-type').value:'all';
+  var sort=document.getElementById('sup-filter-sort')?document.getElementById('sup-filter-sort').value:'default';
+  var filtered=ALL_SUPPLIERS.filter(function(s){
+    var matchSearch=!search||s.name.toLowerCase().includes(search)||(s.organization||'').toLowerCase().includes(search)||(s.country||'').toLowerCase().includes(search);
+    var matchType=type==='all'||!s.pricing||(type==='potable'&&s.pricing.potable)||(type==='agricultural'&&s.pricing.agricultural)||(type==='industrial'&&s.pricing.industrial);
+    return matchSearch&&matchType;
+  });
+  if(sort==='price-asc'){filtered.sort(function(a,b){return (a.pricing&&a.pricing.potable||999999)-(b.pricing&&b.pricing.potable||999999);});}
+  if(sort==='price-desc'){filtered.sort(function(a,b){return (b.pricing&&b.pricing.potable||0)-(a.pricing&&a.pricing.potable||0);});}
+  renderSupplierCards(filtered);
+}
+function renderSupplierCards(suppliers){
   var container=document.getElementById('pub-sup-cards');
   var empty=document.getElementById('pub-sup-empty');
   container.innerHTML='';
-  if(verified.length===0){empty.style.display='block';return;}
+  if(suppliers.length===0){empty.style.display='block';return;}
   empty.style.display='none';
-  verified.forEach(function(s){
+  suppliers.forEach(function(s){
     var card=document.createElement('div');
     card.style.cssText='background:rgba(6,32,64,0.6);border:1px solid rgba(0,229,255,0.12);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px';
-    var nameDiv=document.createElement('div');
-    var nameEl=document.createElement('div');
-    nameEl.style.cssText='font-family:Bebas Neue,sans-serif;font-size:1.15rem;letter-spacing:1.5px;color:#fff;margin-bottom:3px';
-    nameEl.textContent=s.name;
-    var orgEl=document.createElement('div');
-    orgEl.style.cssText='font-size:.75rem;color:#4a7a9b';
-    orgEl.textContent=s.organization||s.country;
-    nameDiv.appendChild(nameEl);nameDiv.appendChild(orgEl);
-    var badge=document.createElement('span');
-    badge.className='badge b-active';badge.textContent='Verified';
-    var header=document.createElement('div');
-    header.style.cssText='display:flex;justify-content:space-between;align-items:flex-start';
-    header.appendChild(nameDiv);header.appendChild(badge);
-    card.appendChild(header);
-    var coverage=document.createElement('div');
-    coverage.style.cssText='font-size:.78rem;color:#4a7a9b';
-    coverage.textContent='Coverage: '+(s.regions||s.country||'N/A');
-    card.appendChild(coverage);
-    var pricing=document.createElement('div');
-    pricing.style.cssText='background:rgba(1,11,20,0.5);border:1px solid rgba(0,229,255,0.08);border-radius:10px;padding:12px';
+    var nameEl=document.createElement('div');nameEl.style.cssText='font-family:Bebas Neue,sans-serif;font-size:1.15rem;letter-spacing:1.5px;color:#fff;margin-bottom:3px';nameEl.textContent=s.name;
+    var orgEl=document.createElement('div');orgEl.style.cssText='font-size:.75rem;color:#4a7a9b';orgEl.textContent=s.organization||s.country;
+    var badge=document.createElement('span');badge.className='badge b-active';badge.textContent='Verified';
+    var header=document.createElement('div');header.style.cssText='display:flex;justify-content:space-between;align-items:flex-start';
+    var nameDiv=document.createElement('div');nameDiv.appendChild(nameEl);nameDiv.appendChild(orgEl);
+    header.appendChild(nameDiv);header.appendChild(badge);card.appendChild(header);
+    var coverage=document.createElement('div');coverage.style.cssText='font-size:.78rem;color:#4a7a9b';coverage.textContent='Coverage: '+(s.regions||s.country||'N/A');card.appendChild(coverage);
+    var pricing=document.createElement('div');pricing.style.cssText='background:rgba(1,11,20,0.5);border:1px solid rgba(0,229,255,0.08);border-radius:10px;padding:12px';
     if(s.pricing&&(s.pricing.potable||s.pricing.agricultural||s.pricing.industrial)){
-      var pTitle=document.createElement('div');
-      pTitle.style.cssText='font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:#4a7a9b;font-weight:600;margin-bottom:8px';
-      pTitle.textContent='Price Per Litre';
-      pricing.appendChild(pTitle);
+      var pTitle=document.createElement('div');pTitle.style.cssText='font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:#4a7a9b;font-weight:600;margin-bottom:8px';pTitle.textContent='Price Per Litre';pricing.appendChild(pTitle);
       [{label:'Potable',val:s.pricing.potable,color:'#00e5ff'},{label:'Agricultural',val:s.pricing.agricultural,color:'#06d6a0'},{label:'Industrial',val:s.pricing.industrial,color:'#ffd166'}].forEach(function(p){
         if(!p.val)return;
-        var row=document.createElement('div');
-        row.style.cssText='display:flex;justify-content:space-between;align-items:center;margin-bottom:5px';
+        var row=document.createElement('div');row.style.cssText='display:flex;justify-content:space-between;align-items:center;margin-bottom:5px';
         var lbl=document.createElement('span');lbl.style.cssText='font-size:.8rem;color:#c8f0ff';lbl.textContent=p.label;
         var val=document.createElement('span');val.style.cssText='font-family:Bebas Neue,sans-serif;font-size:1rem;letter-spacing:1px;color:'+p.color;val.textContent='NGN '+Number(p.val).toLocaleString()+'/L';
         row.appendChild(lbl);row.appendChild(val);pricing.appendChild(row);
@@ -1467,8 +1472,8 @@ async function loadPubSuppliers(){
       var noPrice=document.createElement('div');noPrice.style.cssText='font-size:.8rem;color:#4a7a9b;text-align:center;padding:6px 0';noPrice.textContent='Contact supplier for pricing';pricing.appendChild(noPrice);
     }
     card.appendChild(pricing);
-    var types=document.createElement('div');types.style.cssText='font-size:.76rem;color:#4a7a9b';types.textContent='Supplies: '+s.waterTypes;card.appendChild(types);
-    var btn=document.createElement('button');btn.className='btn btn-p';btn.style.cssText='width:100%;padding:11px;margin-top:4px';btn.textContent='Book Water Now';btn.onclick=function(){goPage('book');};card.appendChild(btn);
+    var types2=document.createElement('div');types2.style.cssText='font-size:.76rem;color:#4a7a9b';types2.textContent='Supplies: '+s.waterTypes;card.appendChild(types2);
+    var btn2=document.createElement('button');btn2.className='btn btn-p';btn2.style.cssText='width:100%;padding:11px;margin-top:4px';btn2.textContent='Book Water Now';btn2.onclick=function(){goPage('book');};card.appendChild(btn2);
     container.appendChild(card);
   });
 }
@@ -1713,7 +1718,7 @@ async function openPS(bid,amountKobo){
     }
   },1500);
 }
-async function sendContact(){var name=document.getElementById('c-name').value.trim(),email=document.getElementById('c-email').value.trim(),subj=document.getElementById('c-subj').value,msg=document.getElementById('c-msg').value.trim();var res=document.getElementById('c-result');if(!name||!email||!msg){res.style.display='block';res.style.color='var(--coral)';res.textContent='Please fill in all fields.';return;}res.style.display='block';res.style.color='var(--muted)';res.textContent='Sending...';var r=await api('POST','/contact',{name:name,email:email,subject:subj,message:msg});if(r.success){res.style.color='var(--green)';res.textContent='Message sent! We will reply within 24 hours.';document.getElementById('c-name').value='';document.getElementById('c-email').value='';document.getElementById('c-msg').value='';}else{res.style.color='var(--coral)';res.textContent='Failed. Please email aqualink79@gmail.com directly.';}}
+async function sendContact(){var name=document.getElementById('c-name').value.trim(),email=document.getElementById('c-email').value.trim(),phone=document.getElementById('c-phone').value.trim(),subj=document.getElementById('c-subj').value,msg=document.getElementById('c-msg').value.trim();var res=document.getElementById('c-result');if(!name||!email||!msg){res.style.display='block';res.style.color='var(--coral)';res.textContent='Please fill in your name, email and message.';return;}res.style.display='block';res.style.color='var(--muted)';res.textContent='Sending your message...';var r=await api('POST','/contact',{name:name,email:email,phone:phone,subject:subj,message:msg});if(r.success){res.style.color='var(--green)';res.textContent='Message sent successfully! We will reply within 24 hours.';document.getElementById('c-name').value='';document.getElementById('c-email').value='';document.getElementById('c-phone').value='';document.getElementById('c-msg').value='';}else{res.style.color='var(--coral)';res.textContent='Failed to send. Please email aqualink79@gmail.com directly.';}}
 function fv(l){return l>=1e6?(l/1e6).toFixed(1)+'M L':l>=1000?(l/1000).toFixed(0)+'K L':l+' L';}
 function pc(p){return p==='Emergency'?'b-crit':p==='Urgent'?'b-pending':'b-complete';}
 function sc(s){return s==='active'?'b-active':s==='pending'?'b-pending':s==='transit'?'b-transit':'b-complete';}
@@ -2070,6 +2075,13 @@ http.createServer(async function(req, res) {
     return json(res,400,{error:'Payment verification failed.'});
   }
 
+  // 404 page
+  if (!rawUrl.startsWith('/api')) {
+    cors(res);
+    res.writeHead(404, {'Content-Type':'text/html'});
+    res.end(policyPage('Page Not Found', '<div class="section" style="text-align:center"><div style="font-size:4rem;margin-bottom:16px">💧</div><h2 style="font-family:Bebas Neue,sans-serif;font-size:2rem;letter-spacing:2px;color:#fff;margin-bottom:12px">404 - PAGE NOT FOUND</h2><p>The page you are looking for does not exist or has been moved.</p><p style="margin-top:12px"><a href="/" style="color:#00e5ff;font-weight:600">Go back to AquaLink Home</a></p></div>'));
+    return;
+  }
   json(res,404,{error:'Not found.'});
 
 }).listen(PORT, function() {
@@ -2084,6 +2096,7 @@ http.createServer(async function(req, res) {
   console.log('   /privacy   /terms   /refund   /shipping');
   console.log('========================================\n');
 });
+
 
 
 
