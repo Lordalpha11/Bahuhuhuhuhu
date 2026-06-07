@@ -663,6 +663,28 @@ var PRICING_CONTENT = `
   <div class="section"><h2><span>❓</span> Questions About Pricing?</h2><p>If you have any questions about pricing or need a custom quote for a large order, contact us at <span class="highlight">aqualink79@gmail.com</span> or visit our platform to place a booking and see live supplier prices.</p></div>
 `;
 
+var FAQ_CONTENT = `
+  <div class=section><h2><span>💧</span> What is AquaLink?</h2><p>AquaLink is an online marketplace that connects verified water suppliers with individuals, communities, NGOs, and governments who need clean water. We facilitate bookings, coordinate deliveries, and process payments securely through one simple platform.</p></div>
+  <div class=section><h2><span>📝</span> How do I place a booking?</h2><p>Create an account, go to Book Water, select your destination, water type, volume, and priority level. You will then see verified suppliers with their prices. Select a supplier, complete payment, and your order is confirmed.</p></div>
+  <div class=section><h2><span>⏰</span> How long does delivery take?</h2><p>Emergency orders: 24 to 48 hours. Urgent orders: 2 to 4 business days. Standard orders: 7 to 14 business days. Times may vary based on location and supplier availability.</p></div>
+  <div class=section><h2><span>🌊</span> What types of water are available?</h2><p><span class=highlight>Potable</span> water for drinking, <span class=highlight>Agricultural</span> water for farming, and <span class=highlight>Industrial</span> water for commercial use. Available types depend on suppliers in your region.</p></div>
+  <div class=section><h2><span>💰</span> How is pricing determined?</h2><p>Prices are set by individual water suppliers. AquaLink adds a flat 15% service fee at checkout. You always see the full price before confirming payment. No hidden charges.</p></div>
+  <div class=section><h2><span>💳</span> What payment methods are accepted?</h2><p>AquaLink accepts debit cards, bank transfers, and USSD through Paystack. All transactions are secured and encrypted.</p></div>
+  <div class=section><h2><span>🔄</span> What if my supplier rejects my order?</h2><p>AquaLink automatically reassigns your order to the next available verified supplier. You will be notified by email. If no supplier is available, a full refund is initiated within 5 to 7 business days.</p></div>
+  <div class=section><h2><span>↩️</span> How do I get a refund?</h2><p>Email <span class=highlight>aqualink79@gmail.com</span> with your Booking ID. Full refunds apply when no supplier is available or delivery is not completed as agreed. Refunds are processed within 5 to 7 business days.</p></div>
+  <div class=section><h2><span>🚚</span> How do I become a verified supplier?</h2><p>Click Become a Supplier on our homepage, fill in your details, capacity, and coverage area. Our team reviews within 24 hours and grants you a Verified Supplier badge upon approval.</p></div>
+  <div class=section><h2><span>🌍</span> Is AquaLink available in my country?</h2><p>We serve Africa, Asia, the Middle East, and South America. Availability depends on suppliers in your region. If none are available, you get a full refund. We are always onboarding new suppliers.</p></div>
+  <div class=section><h2><span>📧</span> How do I contact AquaLink?</h2><p>Email <span class=highlight>aqualink79@gmail.com</span> anytime. We respond within 24 hours. You can also use the contact form on our homepage.</p></div>
+`;
+var ABOUT_CONTENT = `
+  <div class=section><h2><span>💧</span> Our Mission</h2><p>AquaLink was built on one belief: no person on Earth should suffer from lack of access to clean water. We exist to make that a reality by connecting water suppliers directly with the communities, organizations, and governments that need them most.</p></div>
+  <div class=section><h2><span>🌍</span> Who We Are</h2><p>AquaLink is a global water distribution marketplace founded on <span class=highlight>15th May, 2026</span>. Built by a team of technology and humanitarian professionals, our platform eliminates the inefficiency that has historically made emergency water distribution slow and unreliable.</p></div>
+  <div class=section><h2><span>🚀</span> What We Do</h2><p>We connect three groups: <span class=highlight>Water Suppliers</span> who have water and capacity to deliver, <span class=highlight>Consumers</span> such as individuals, communities, NGOs, and governments who need water, and <span class=highlight>AquaLink</span> as the technology layer that coordinates logistics, processes payments, and ensures accountability.</p></div>
+  <div class=section><h2><span>🌐</span> Where We Operate</h2><p><span class=highlight>Africa:</span> Nigeria, Kenya, Ethiopia, Somalia, Sudan, Niger, Mali, Chad, Ghana, DR Congo, South Africa.<br><span class=highlight>Asia:</span> India, Bangladesh, Pakistan, Afghanistan, Yemen, Myanmar, Indonesia, Philippines.<br><span class=highlight>Middle East:</span> Syria, Iraq, Jordan.<br><span class=highlight>Americas:</span> Haiti, Venezuela, Colombia, Brazil, Mexico.</p></div>
+  <div class=section><h2><span>🤝</span> Our Values</h2><p><span class=highlight>Transparency</span> — Every booking tracked, every payment verified, every delivery confirmed.<br><span class=highlight>Accountability</span> — Suppliers verified before receiving orders. Customers protected at every stage.<br><span class=highlight>Speed</span> — Emergency orders coordinated within 24 to 48 hours.<br><span class=highlight>Inclusion</span> — Whether a government ministry or a family in need, AquaLink serves you equally.</p></div>
+  <div class=section><h2><span>📊</span> Why AquaLink?</h2><p>The global water crisis affects over 2 billion people. Traditional water distribution is slow and fragmented. AquaLink uses technology to connect supply directly to demand, process payments instantly, and create a transparent digital record of every transaction. We are infrastructure for human survival.</p></div>
+  <div class=section><h2><span>📧</span> Get In Touch</h2><p>For partnerships, supplier onboarding, or inquiries, contact us at <span class=highlight>aqualink79@gmail.com</span>. We respond within 24 hours and welcome collaborations with NGOs, governments, and humanitarian organizations.</p></div>
+`;
 // ── HTML APP ──────────────────────────────────────────
 var APP = `<!DOCTYPE html>
 <html lang="en">
@@ -925,8 +947,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
     <div class="logo"><div class="lm"></div>AQUALINK</div>
     <div class="land-links">
       <a href="#how">How It Works</a><a href="#who">Who It's For</a>
-      <a href="#suppliers">Become a Supplier</a><a href="#about">About Us</a><a href="#contact">Contact</a>
-      <a href="/pricing" target="_blank">Pricing</a>
+      <a href="#suppliers">Become a Supplier</a><a href="/about" target="_blank">About Us</a><a href="#contact">Contact</a>
+      <a href="/pricing" target="_blank">Pricing</a><a href="/faq" target="_blank">FAQ</a>
     </div>
     <div class="land-btns">
       <button class="btn-outline" onclick="openAuth('login')">Login</button>
@@ -1030,7 +1052,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
         <p>A global platform for equitable water distribution. Every community deserves access to clean, safe water.</p>
       </div>
       <div class="footer-col"><h6>Platform</h6><a onclick="openAuth('login')">Login</a><a onclick="openAuth('register','consumer')">Book Water</a><a onclick="openAuth('register','supplier')">Become Supplier</a></div>
-      <div class="footer-col"><h6>Company</h6><a href="#about">About Us</a><a href="#contact">Contact</a><a href="#who">Who We Serve</a></div>
+      <div class="footer-col"><h6>Company</h6><a href="/about" target="_blank">About Us</a><a href="#contact">Contact</a><a href="#who">Who We Serve</a><a href="/faq" target="_blank">FAQ</a></div>
       <div class="footer-col">
         <h6>Legal</h6>
         <a href="/privacy" target="_blank">Privacy Policy</a>
@@ -1731,6 +1753,12 @@ http.createServer(async function(req, res) {
   if (rawUrl==='/pricing' && method==='GET') {
     return html(res, policyPage('Pricing & Fees', PRICING_CONTENT));
   }
+  if (rawUrl==='/faq' && method==='GET') {
+    return html(res, policyPage('Frequently Asked Questions', FAQ_CONTENT));
+  }
+  if (rawUrl==='/about' && method==='GET') {
+    return html(res, policyPage('About AquaLink', ABOUT_CONTENT));
+  }
 
   // All other non-API routes serve the main app
   if (!rawUrl.startsWith('/api')) { html(res, APP); return; }
@@ -2056,5 +2084,6 @@ http.createServer(async function(req, res) {
   console.log('   /privacy   /terms   /refund   /shipping');
   console.log('========================================\n');
 });
+
 
 
